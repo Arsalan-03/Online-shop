@@ -1,2 +1,2 @@
 <?php
-echo "Hello World!GUO";
+require_once 'get_registration.php';
