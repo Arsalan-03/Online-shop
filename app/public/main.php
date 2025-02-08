@@ -10,7 +10,7 @@
     <nav>
         <ul>
             <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
+            <li><a href="handle_profile.php">Profile</a></li>
             <li><a href="#">Technologies &bigtriangledown;</a>
                 <ul>
                     <li><a href="#">HTML</a></li>
@@ -35,31 +35,42 @@
     </nav>
 </header>
 
-<div class="container">
-    <h3>Catalog</h3>
-    <div class="card-deck">
-
+<section class="cards">
+    <div class="container container_cards">
         <?php if (isset($products)) {
-            foreach ($products as $product): ?>
-
-        <div class="card text-center">
-            <a href="#">
-                <div class="card-header">
-                    Hit!
+        foreach ($products as $product): ?>
+        <!-- Карточка товара -->
+        <div class="card">
+            <!-- Верхняя часть -->
+            <div class="card__top">
+                <!-- Изображение-ссылка товара -->
+                <a href="#" class="card__image">
+                    <img
+                            src="<?php echo $product['image']; ?>"
+                            alt="Apple IPhone 14 PRO Max Gold"
+                    />
+                </a>
+                <!-- Скидка на товар -->
+                <div class="card__label">-10%</div>
+            </div>
+            <!-- Нижняя часть -->
+            <div class="card__bottom">
+                <!-- Цены на товар (с учетом скидки и без)-->
+                <div class="card__prices">
+                    <div class="card__price card__price--discount"><?php echo $product['price']; ?></div>
+                    <div class="card__price card__price--common">150 000</div>
                 </div>
-                <img class="card-img-top" src="<?php echo $product['image']; ?>" alt="Card image">
-                <div class="card-body">
-                    <p class="card-text text-muted"><?php echo $product['name']; ?></p>
-                    <a href="#"><h5 class="card-title"><?php echo $product['description']; ?></h5></a>
-                    <div class="card-footer">
-                        <?php echo $product['price']; ?>
-                    </div>
-                </div>
-            </a>
+                <!-- Ссылка-название товара -->
+                <a href="#" class="card__title">
+                    <?php echo $product['name']; ?>
+                </a>
+                <!-- Кнопка добавить в корзину -->
+                <button class="card__add">В корзину</button>
+            </div>
         </div>
         <?php endforeach; } ?>
     </div>
-</div>
+</section>
 
 </body>
 </html>
@@ -76,7 +87,7 @@
 
      body {
          height: 100vh;
-         background-color: darkgrey;
+         background-color: white;
          background-size: cover;
          background-position: center;
      }
@@ -178,5 +189,168 @@
          font-weight: bold;
          font-size: 18px;
          background-color: white;
+     }
+
+     .card {
+         width: 225px;
+         min-height: 350px;
+         box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+         display: flex;
+         flex-direction: column; /* Размещаем элементы в колонку */
+         border-radius: 4px;
+         transition: 0.2s;
+         position: relative;
+     }
+
+     /* При наведении на карточку - меняем цвет тени */
+     .card:hover {
+         box-shadow: 4px 8px 16px rgba(255, 102, 51, 0.2);
+     }
+
+     .card__top {
+         flex: 0 0 220px; /* Задаем высоту 220px, запрещаем расширение и сужение по высоте */
+         position: relative;
+         overflow: hidden; /* Скрываем, что выходит за пределы */
+     }
+
+     /* Контейнер для картинки */
+     .card__image {
+         display: block;
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+     }
+
+     .card__image > img {
+         width: 100%;
+         height: 100%;
+         object-fit: contain; /* Встраиваем картинку в контейнер card__image */
+         transition: 0.2s;
+     }
+
+     /* При наведении - увеличиваем картинку */
+     .card__image:hover > img {
+         transform: scale(1.1);
+     }
+
+     /* Размещаем скидку на товар относительно изображения */
+     .card__label {
+         padding: 4px 8px;
+         position: absolute;
+         bottom: 10px;
+         left: 10px;
+         background: #ff6633;
+         border-radius: 4px;
+         font-weight: 400;
+         font-size: 16px;
+         color: #fff;
+     }
+
+     .card__bottom {
+         display: flex;
+         flex-direction: column;
+         flex: 1 0 auto; /* Занимаем всю оставшуюся высоту карточки */
+         padding: 10px;
+     }
+
+     .card__prices {
+         display: flex;
+         margin-bottom: 10px;
+         flex: 0 0 50%; /* Размещаем цены равномерно в две колонки */
+     }
+
+     .card__price::after {
+         content: "₽";
+         margin-left: 4px;
+         position: relative;
+     }
+
+     .card__price--discount {
+         font-weight: 700;
+         font-size: 19px;
+         color: #414141;
+         display: flex;
+         flex-wrap: wrap-reverse;
+     }
+
+     .card__price--discount::before {
+         content: "Со скидкой";
+         font-weight: 400;
+         font-size: 13px;
+         color: #bfbfbf;
+     }
+
+     .card__price--common {
+         font-weight: 400;
+         font-size: 17px;
+         color: #606060;
+         display: flex;
+         flex-wrap: wrap-reverse;
+         justify-content: flex-end;
+     }
+
+     .card__price--common::before {
+         content: "Обычная";
+         font-weight: 400;
+         font-size: 13px;
+         color: #bfbfbf;
+     }
+
+     .card__title {
+         display: block;
+         margin-bottom: 10px;
+         font-weight: 400;
+         font-size: 17px;
+         line-height: 150%;
+         color: #414141;
+     }
+
+     .card__title:hover {
+         color: #ff6633;
+     }
+
+     .card__add {
+         display: block;
+         width: 100%;
+         font-weight: 400;
+         font-size: 17px;
+         color: #70c05b;
+         padding: 10px;
+         text-align: center;
+         border: 1px solid #70c05b;
+         border-radius: 4px;
+         cursor: pointer; /* Меняем курсор при наведении */
+         transition: 0.2s;
+         margin-top: auto; /* Прижимаем кнопку к низу карточки */
+     }
+
+     .card__add:hover {
+         border: 1px solid #ff6633;
+         background-color: #ff6633;
+         color: #fff;
+     }
+
+     .cards {
+         padding: 75px 0;
+     }
+
+     .container {
+         width: 100%;
+         max-width: 1200px;
+         padding: 0 15px;
+         margin: 0 auto;
+     }
+
+     .container_cards {
+         display: grid;
+         width: 100%;
+         grid-template-columns: repeat(auto-fill, 225px);
+         justify-content: center;
+         justify-items: center;
+         margin: 0 auto;
+         column-gap: 30px;
+         row-gap: 40px;
      }
 </style>
