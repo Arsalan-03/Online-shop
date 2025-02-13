@@ -1,30 +1,63 @@
 <?php
+
+require_once './classes/User.php';
+require_once './classes/Product.php';
+
 $requestUri = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
 if ($requestUri === '/registrate') {
     if ($requestMethod === 'GET') {
-        require_once 'get_registration.php';
+        $user = new User();
+        $user->getRegistrationForm();
     } elseif ($requestMethod === 'POST') {
-        require_once 'post_registration.php';
+        $user = new User();
+        $user->registrate();
     } else {
         echo "$requestMethod не поддерживается адресом $requestUri";
     }
 } if ($requestUri === '/login') {
     if ($requestMethod === 'GET') {
-        require_once 'get_login.php';
+        $user = new User();
+        $user->getLoginForm();
     } elseif ($requestMethod === 'POST') {
-        require_once 'post_login.php';
-    }
-    else {
+        $user = new User();
+        $user->login();
+    } else {
         echo "$requestMethod не поддерживается адресом $requestUri";
     }
 } if ($requestUri === '/main') {
     if ($requestMethod === 'GET') {
-        require_once 'test.php';
+        $user = new Product();
+        $user->getCatalog();
     } else {
         echo "$requestMethod не поддерживается адресом $requestUri";
     }
-} else {
-    require_once '404.php';
+} if ($requestUri === '/my_profile') {
+    if ($requestMethod === 'GET') {
+        $user = new User();
+        $user->myProfile();
+    } else {
+        echo "$requestMethod не поддерживается адресом $requestUri";
+    }
+} if ($requestUri === '/edit_profile') {
+    if ($requestMethod === 'GET') {
+        $user = new User();
+        $user->getEditProfileForm();
+    } elseif ($requestMethod === 'POST') {
+        $user = new User();
+        $user->editProfile();
+    } else {
+        echo "$requestMethod не поддерживается адресом $requestUri";
+    }
+} if ($requestUri === '/addProduct') {
+    if ($requestMethod === 'GET') {
+        $user = new Product();
+        $user->getAddProductForm();
+    } elseif ($requestMethod === 'POST') {
+        $user = new Product();
+        $user->addProduct();
+    } else {
+        echo "$requestMethod не поддерживается адресом $requestUri";
+    }
 }

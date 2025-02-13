@@ -7,16 +7,20 @@
 </head>
 
 <body>
-<form action="post_editUser.php" method="post">
+<form action="/edit_profile" method="post">
     <div class="profile-container">
         <h2>Профиль пользователя</h2>
         <div class="profile-info">
+
+            <label style="color: red"> <?php if (isset($errors['name'])) echo $errors['name'];; ?></label>
             <label for="name">Имя:</label>
             <input type="text" name ="name" id="name" value="Ваше Имя">
 
+            <label style="color: red"> <?php if (isset($errors['email'])) echo $errors['email'];; ?></label>
             <label for="email">Почта:</label>
             <input type="email" name ="email" id="email" value="youremail@example.com">
 
+            <label style="color: red"> <?php if (isset($errors['password'])) echo $errors['password'];; ?></label>
             <label for="password">Пароль:</label>
             <input type="password" name ="password" id="password" placeholder="Введите новый пароль">
 

@@ -10,7 +10,7 @@
     <nav>
         <ul>
             <li><a href="#">Home</a></li>
-            <li><a href="handle_profile.php">Profile</a></li>
+            <li><a href="/my_profile">Profile</a></li>
             <li><a href="#">Technologies &bigtriangledown;</a>
                 <ul>
                     <li><a href="#">HTML</a></li>
@@ -65,7 +65,9 @@
                     <?php echo $product['name']; ?>
                 </a>
                 <!-- Кнопка добавить в корзину -->
-                <button class="card__add">В корзину</button>
+<!--                <form action="/add-product" method="post"></form>-->
+<!--                <input type="hidden" name="product_id" value="--><?php //echo $product['id']; ?><!--">-->
+                <a href="/addProduct"><button class="card__add">В корзину</button></a>
             </div>
         </div>
         <?php endforeach; } ?>

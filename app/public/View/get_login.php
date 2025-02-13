@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="login-box">
-    <form action="post_login.php" method="post">
+    <form action="/login" method="post">
         <h2>Login</h2>
         <div class="input-box">
         <span class="icon">

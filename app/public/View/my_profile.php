@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="edit">
-                <a href="test.php"><h2>Редактировать</h2> </a>
+                <a href="/edit_profile"><h2>Редактировать</h2> </a>
             </div>
         </div>
         <?php endforeach; } ?>
