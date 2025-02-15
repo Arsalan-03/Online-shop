@@ -1,10 +1,12 @@
 <?php
 
-class User
+require_once './Models/User.php';
+
+class UserController
 {
     public function getRegistrationForm(): void
     {
-        require_once './View/get_registration.php';
+        require_once './Views/registration.php';
     }
     public function registrate(): void
     {
@@ -15,14 +17,13 @@ class User
             $email = $_POST['email'];
             $password = $_POST['password'];
 
-            $pdo = new PDO("pgsql:host=db;port=5432;dbname=postgres;", 'arsik', '0000');
-            $statement = $pdo->prepare("INSERT INTO users(name, email, password) VALUES(:name, :email, :password)");
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $statement->execute(['name' => $name, 'email' => $email, 'password' => $hashedPassword]);
+            $modelUser = new User();
+            $modelUser->create($name, $email, $password); //Добавляем пользователя
+
             header("Location: /login");
             exit();
         } else {
-            require_once './View/get_registration.php';
+            require_once './Views/registration.php';
         }
     }
 
@@ -50,10 +51,10 @@ class User
                 if ($pos === false) {
                     $errors['email'] = 'Некоректно ведён поле email';
                 } elseif (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $pdo = new PDO("pgsql:host=db;port=5432;dbname=postgres;", 'arsik', '0000');
-                    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
-                    $stmt->execute(['email' => $email]);
-                    $result = $stmt->fetch();
+
+                    $modelUser = new User();
+                    $result = $modelUser->getByEmail($email); //ищем пользователя по email
+
                     if ($result) {
                         $errors['email'] = 'email уже существует';
                     }
@@ -82,7 +83,7 @@ class User
 
     public function getLoginForm()
     {
-        require_once './View/get_login.php';
+        require_once './Views/login.php';
     }
 
     public function login(): void
@@ -90,16 +91,14 @@ class User
         $errors= $this->logValidate($_POST);
 
         if (empty($errors)) {
-            $login = $_POST['login'];
+            $login = $_POST['email'];
             $password = $_POST['password'];
 
-            $pdo = new PDO("pgsql:host=db;port=5432;dbname=postgres;", 'arsik', '0000');
-            $statement = $pdo->prepare("SELECT * FROM users WHERE email = :login");
-            $statement->execute(['login' => $login]);
-            $data = $statement->fetch();
+            $modelUser = new User();
+            $data = $modelUser->getByEmail($login); //проверяем пользователя по email
 
             if ($data === false) {
-                $errors['login'] = 'Логин или пароль указаны неверно';
+                $errors['email'] = 'Логин или пароль указаны неверно';
             } else {
                 $passwordFromDb = $data['password'];
                 if (password_verify($password, $passwordFromDb)) {
@@ -108,19 +107,19 @@ class User
 
                     header("Location: /main");
                 } else {
-                    $errors['login'] = 'Логин или пароль указаны неверно';
+                    $errors['email'] = 'Логин или пароль указаны неверно';
                 }
             }
         }
-        require_once './View/get_login.php';
+        require_once './Views/login.php';
     }
 
     private function logValidate(array $data):array
     {
         $errors = [];
 
-        if (!isset($data['login'])) {
-            $errors['login'] = 'Заполните поле login';
+        if (!isset($data['email'])) {
+            $errors['email'] = 'Заполните поле login';
         }
 
         if (!isset($data['password'])) {
@@ -130,30 +129,23 @@ class User
         return $errors;
     }
 
-    public function getMyProfileForm(): void
-    {
-        require_once './View/my_profile.php';
-    }
-
     public function myProfile(): void
     {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header("Location: /get_login.php");
+            header("Location: /login.php");
         }
 
         $user = $_SESSION['user_id'];
-        $pdo = new PDO("pgsql:host=db;port=5432;dbname=postgres;", 'arsik', '0000');
-        $statement = $pdo->prepare("SELECT * FROM users WHERE id = :user_id");
-        $statement->execute(['user_id' => $user]);
-        $profileUsers = $statement->fetchAll();
-        require_once './View/my_profile.php';
+        $modelUser = new User();
+        $profileUsers = $modelUser->getById($user); //проверяем пользователя по ID
 
+        require_once './Views/my_profile.php';
     }
 
     public function getEditProfileForm(): void
     {
-        require_once './View/edit_profile.php';
+        require_once './Views/edit_profile.php';
     }
 
     public function editProfile(): void
@@ -161,26 +153,32 @@ class User
         $errors = $this->editProfileValidate($_POST);
 
         if (empty($errors)) {
+            session_start();
             $userId = $_SESSION['user_id'];
 
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['password'];
 
-            $pdo = new PDO("pgsql:host=db;port=5432;dbname=postgres;", 'arsik', '0000');
-            $stmt = $pdo->prepare("UPDATE users SET name = :name, email = :email, password = :password WHERE id = :user_id");
-            $hashPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt->execute(['name' => $name, 'email' => $email, 'password' => $hashPassword, 'user_id' => $userId]);
+            $modelUser = new User();
+            $result = $modelUser->getByEmail($email); // Проверяем пользователя по email
 
-            header("Location: /edit_profile");
+            if (!$result) {
+
+                $modelUser = new User();
+                $modelUser->update($name, $email, $password, $userId); // Редактируем существующего пользователя
+
+                header("Location: /edit_profile");
+            }
         }
 
-        require_once './View/edit_profile.php';
+        require_once './Views/edit_profile.php';
     }
 
     private function editProfileValidate(array $data): array
     {
         $errors = [];
+
         //валидация имени
         if (isset($data['name'])) {
             $name = $data['name'];
@@ -200,25 +198,8 @@ class User
                 $pos = strrpos($email, '@');
                 if ($pos === false) {
                     $errors['email'] = 'Некоректно ведён поле email';
-                } elseif (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
-                    $pdo = new PDO("pgsql:host=db;port=5432;dbname=postgres;", 'arsik', '0000');
-                    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
-                    $stmt->execute(['email' => $email]);
-                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                    session_start();
-                    $userId = $_SESSION['user_id'];
-
-                    if ($result !== false) {
-                        if ($result['id'] !== $userId) {
-                            $errors['email'] = 'email уже зарегистрирован';
-                        }
-                    } else {
-                        $errors['email'] = 'Пользователь не найден';
-                    }
                 }
-            }
+                }
         } else {
             $errors['email'] = 'Заполните поле email';
         }

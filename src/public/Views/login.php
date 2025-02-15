@@ -17,7 +17,7 @@
         <span class="icon">
           <i class="fa-solid fa-envelope"></i>
         </span>
-            <input type="email" name="login" required>
+            <input type="email" name="email" required>
             <label for="">Login</label>
         </div>
         <div class="input-box">

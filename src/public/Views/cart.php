@@ -9,14 +9,14 @@
 <body>
 <div class="cart-container">
     <h2>Ваша корзина</h2>
-    <?php if (isset($cardProducts)) {
-        foreach ($cardProducts as $cardProduct): ?>
+    <?php if (isset($cartProducts)) {
+        foreach ($cartProducts as $cartProduct): ?>
     <ul class="cart-items">
         <li class="cart-item">
-            <img src="<?php echo $cardProduct['image']; ?>" alt="Товар 1" class="product-image">
+            <img src="<?php echo $cartProduct['image']; ?>" alt="Товар 1" class="product-image">
             <div class="item-details">
-                <h3><?php echo $cardProduct['name']; ?></h3>
-                <p><?php echo 'Цена: ' . $cardProduct['price'] . '₽'; ?> </p>
+                <h3><?php echo $cartProduct['name']; ?></h3>
+                <p><?php echo 'Цена: ' . $cartProduct['price'] . '₽'; ?> </p>
                 <input type="number" value="1" min="1" class="item-quantity">
             </div>
             <button class="remove-item">Удалить</button>
@@ -25,7 +25,7 @@
     </ul>
     <div class="cart-summary">
         <h3>Итого:</h3>
-        <p class="total-price">2500 ₽</p>
+        <p class="total-price"><?php echo $totalPrice; ?></p>
         <button class="checkout-button">Оформить заказ</button>
     </div>
 </div>

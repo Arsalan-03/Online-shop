@@ -11,18 +11,7 @@
         <ul>
             <li><a href="#">Home</a></li>
             <li><a href="/my_profile">Profile</a></li>
-            <li><a href="#">Technologies &bigtriangledown;</a>
-                <ul>
-                    <li><a href="#">HTML</a></li>
-                    <li><a href="#">CSS</a></li>
-                    <li><a href="#">JavaScript</a>
-                        <ul>
-                            <li><a href="#">PHP</a></li>
-                            <li><a href="#">JQuery</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
+            <li><a href="/cart">Cart</a></li>
             <li><a href="#">Portfolio</a></li>
             <li><a href="#">Design &bigtriangledown;</a>
                 <ul>
@@ -64,10 +53,12 @@
                 <a href="#" class="card__title">
                     <?php echo $product['name']; ?>
                 </a>
-                <!-- Кнопка добавить в корзину -->
-<!--                <form action="/add-product" method="post"></form>-->
-<!--                <input type="hidden" name="product_id" value="--><?php //echo $product['id']; ?><!--">-->
-                <a href="/addProduct"><button class="card__add">В корзину</button></a>
+<!--                 Кнопка добавить в корзину-->
+                <form action="/addProduct" method="post">
+                <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+                    <input type="hidden" name="quantity" value="1">
+                <button class="card__add">В корзину</button>
+                </form>
             </div>
         </div>
         <?php endforeach; } ?>

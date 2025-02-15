@@ -1,6 +1,9 @@
 <?php
 
-class Product
+require_once './Models/Product.php';
+require_once './Models/UserProduct.php';
+
+class ProductController
 {
     public function getCatalog(): void
     {
@@ -9,16 +12,10 @@ class Product
             header("Location: /login");
         }
 
-        $pdo = new PDO("pgsql:host=db;port=5432;dbname=postgres;", 'arsik', '0000');
-        $statement = $pdo->query("SELECT * FROM products");
-        $products = $statement->fetchAll();
+        $modelProduct = new Product();
+        $products = $modelProduct->getAll();
 
-        require_once './View/get_catalog.php';
-    }
-
-    public function getAddProductForm(): void
-    {
-        require_once './View/get_addProduct.php';
+        require_once './Views/catalog.php';
     }
 
     public function addProduct(): void
@@ -26,28 +23,25 @@ class Product
         $errors = $this->addProductValidate($_POST);
         if (empty($errors)) {
 
+            session_start();
             $userId = $_SESSION['user_id'];
             $productId = $_POST['product_id'];
             $quantity = $_POST['quantity'];
 
-            $pdo = new PDO("pgsql:host=db;port=5432;dbname=postgres;", 'arsik', '0000');
 
             // Проверяем, есть ли продукт в таблице
-            $stmt = $pdo->prepare("SELECT * FROM user_products WHERE product_id = :product_id AND user_id = :user_id");
-            $stmt->execute(['product_id' => $productId, 'user_id' => $userId]);  // Добавлен user_id для фильтрации
-            $result = $stmt->fetch();
+            $modelUserProduct = new UserProduct();
+            $result = $modelUserProduct->getOneByUserIdByProductId($productId, $userId); // Проверяем продукт по userId и ProductId
 
             if ($result) {
-                // Обновляем количество товара
-                $stmt = $pdo->prepare("UPDATE user_products SET quantity = quantity + :quantity WHERE product_id = :product_id AND user_id = :user_id");
-                $stmt->execute(['quantity' => $quantity, 'product_id' => $productId, 'user_id' => $userId]);
+               $modelUserProduct = new UserProduct();
+               $modelUserProduct->updateQuantity($productId, $quantity, $userId); // Обновляем количество товара
             } else {
-                // Добавляем новый товар в корзину
-                $stmt = $pdo->prepare("INSERT INTO user_products (user_id, product_id, quantity) VALUES (:user_id, :product_id, :quantity)");
-                $stmt->execute(['user_id' => $userId, 'product_id' => $productId, 'quantity' => $quantity]);
+                $modelUserProduct = new UserProduct();
+                $modelUserProduct->add($userId, $productId, $quantity); // Добавляем новый товар в корзину
             }
         }
-        require_once './View/get_addProduct.php';
+        header("Location: /main");
     }
 
     private function addProductValidate(array $date): array
@@ -56,10 +50,9 @@ class Product
         //Валидация товара
         if (isset($date['product_id'])) {
             $productId = (int) $date['product_id'];
-            $pdo = new PDO("pgsql:host=db;port=5432;dbname=postgres;", 'arsik', '0000');
-            $stmt = $pdo->prepare("SELECT * FROM products WHERE id = :product_id");
-            $stmt->execute(['product_id' => $productId]);
-            $result = $stmt->fetch();
+
+            $modelProduct = new Product();
+            $result = $modelProduct->getOneById($productId);
 
             if ($result === false) {
                 $errors['product_id'] = 'Товар не существует';

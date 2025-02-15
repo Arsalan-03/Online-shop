@@ -1,17 +1,26 @@
-<form action="" method="POST">
+<form action="/registration" method="POST">
     <div class="container">
-        <h1>Добавить товар</h1>
+        <h1>Register</h1>
+        <p>Please fill in this form to create an account.</p>
         <hr>
 
-        <label style="color: red"> <?php if (isset($errors['product_id'])) echo $errors['product_id'];; ?></label>
-        <label for="product_id"><b>Product-ID</b></label>
-        <input type="text" placeholder="product_id" name="product_id" id="product_id" required>
+        <label style="color: red"> <?php if (isset($errors['name'])) echo $errors['name'];; ?></label>
+        <label for="name"><b>Name</b></label>
+        <input type="text" placeholder="name" name="name" id="name" required>
 
-        <label style="color: red"> <?php if (isset($errors['quantity'])) echo $errors['quantity'];; ?></label>
-        <label for="quantity"><b>Quantity</b></label>
-        <input type="text" placeholder="Enter quantity" name="quantity" id="quantity" required>
+        <label style="color: red"> <?php if (isset($errors['email'])) echo $errors['email'];; ?></label>
+        <label for="email"><b>Email</b></label>
+        <input type="text" placeholder="Enter Email" name="email" id="email" required>
 
-        <button type="submit" class="registerbtn">Добавить в корзину</button>
+        <label style="color: red"> <?php if (isset($errors['password'])) echo $errors['password'];; ?></label>
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" id="psw" required>
+
+        <label style="color: red"> <?php if (isset($errors['psw-repeat'])) echo $errors['psw-repeat'];; ?></label>
+        <label for="psw-repeat"><b>Repeat Password</b></label>
+        <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>
+        <hr>
+        <button type="submit" class="registerbtn">Register</button>
     </div>
 
     <div class="container signin">
@@ -75,7 +84,6 @@
         text-align: center;
     }
 </style>
-
 
 
 
