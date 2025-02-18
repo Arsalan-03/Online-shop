@@ -3,6 +3,13 @@ require_once './Models/UserProduct.php';
 require_once './Models/Product.php';
 class CartController
 {
+    private $modelProduct;
+    private $modelUserProduct;
+    public function __construct()
+    {
+        $this->modelProduct = new Product();
+        $this->modelUserProduct = new UserProduct();
+    }
     public function getCartForm(): void
     {
         session_start();
@@ -12,15 +19,14 @@ class CartController
 
         $userId = $_SESSION['user_id'];
 
-        $modelUserProduct = new UserProduct();
-        $userProducts = $modelUserProduct->getByUserId($userId); //Достаем идентификаторы продукта, который добавил текущий пользователь
+        $userProducts = $this->modelUserProduct->getByUserId($userId); //Достаем идентификаторы продукта, который добавил текущий пользователь
 
         $cartProducts = [];
+
         foreach ($userProducts as $userProduct) {
             $productId = $userProduct['product_id'];
 
-            $modelProduct = new Product();
-            $product = $modelProduct->getOneById($productId); //Достаем данные продукта, который добавил текущий польлзователь
+            $product = $this->modelProduct->getOneById($productId); //Достаем данные продукта, который добавил текущий польлзователь
 
             $cartProducts[] = $product;
         }

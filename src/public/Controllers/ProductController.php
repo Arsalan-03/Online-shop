@@ -5,6 +5,14 @@ require_once './Models/UserProduct.php';
 
 class ProductController
 {
+    private $modelProduct;
+    private $modelUserProduct;
+
+    public function __construct()
+    {
+        $this->modelProduct = new Product();
+        $this->modelUserProduct = new UserProduct();
+    }
     public function getCatalog(): void
     {
         session_start();
@@ -12,8 +20,7 @@ class ProductController
             header("Location: /login");
         }
 
-        $modelProduct = new Product();
-        $products = $modelProduct->getAll();
+        $products = $this->modelProduct->getAll();
 
         require_once './Views/catalog.php';
         exit();
@@ -31,13 +38,13 @@ class ProductController
 
 
             // Проверяем, есть ли продукт в таблице
-            $modelUserProduct = new UserProduct();
-            $result = $modelUserProduct->getOneByUserIdByProductId($userId, $productId); // Проверяем продукт по userId и ProductId
+
+            $result = $this->modelUserProduct->getOneByUserIdByProductId($userId, $productId); // Проверяем продукт по userId и ProductId
 
             if ($result === false) {
-                $modelUserProduct->add($userId, $productId, $quantity); // Добавляем новый товар в корзину
+                $this->modelUserProduct->add($userId, $productId, $quantity); // Добавляем новый товар в корзину
             } else {
-                $modelUserProduct->updateQuantity($productId, $quantity, $userId); // Обновляем количество товара
+                $this->modelUserProduct->updateQuantity($productId, $quantity, $userId); // Обновляем количество товара
 
             }
         }
@@ -51,8 +58,7 @@ class ProductController
         if (isset($date['product_id'])) {
             $productId = (int) $date['product_id'];
 
-            $modelProduct = new Product();
-            $result = $modelProduct->getOneById($productId);
+            $result = $this->modelProduct->getOneById($productId);
 
             if ($result === false) {
                 $errors['product_id'] = 'Товар не существует';

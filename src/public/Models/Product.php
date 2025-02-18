@@ -4,6 +4,12 @@ require_once 'Models/Database.php';
 
 class Product extends Database
 {
+    public int $id;
+    public string $image;
+    public string $name;
+    public string $description;
+    public int $price;
+
     public function getAll(): array
     {
         $statement = $this->getPdo()->query("SELECT * FROM products");
@@ -16,4 +22,6 @@ class Product extends Database
         $stmt->execute(['product_id' => $productId]);
         return $stmt->fetch();
     }
+
+
 }

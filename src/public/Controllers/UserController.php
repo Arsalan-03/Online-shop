@@ -4,6 +4,11 @@ require_once './Models/User.php';
 
 class UserController
 {
+    private $modelUser;
+    public function __construct()
+    {
+        $this->modelUser = new User();
+    }
     public function getRegistrationForm(): void
     {
         require_once './Views/registration.php';
@@ -17,8 +22,7 @@ class UserController
             $email = $_POST['email'];
             $password = $_POST['password'];
 
-            $modelUser = new User();
-            $modelUser->create($name, $email, $password); //Добавляем пользователя
+            $this->modelUser->create($name, $email, $password); //Добавляем пользователя
 
             header("Location: /login");
             exit();
@@ -52,8 +56,7 @@ class UserController
                     $errors['email'] = 'Некоректно ведён поле email';
                 } elseif (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-                    $modelUser = new User();
-                    $result = $modelUser->getByEmail($email); //ищем пользователя по email
+                    $result = $this->modelUser->getByEmail($email); //ищем пользователя по email
 
                     if ($result) {
                         $errors['email'] = 'email уже существует';
@@ -94,8 +97,7 @@ class UserController
             $login = $_POST['email'];
             $password = $_POST['password'];
 
-            $modelUser = new User();
-            $data = $modelUser->getByEmail($login); //проверяем пользователя по email
+            $data = $this->modelUser->getByEmail($login); //проверяем пользователя по email
 
             if ($data === false) {
                 $errors['email'] = 'Логин или пароль указаны неверно';
@@ -137,8 +139,8 @@ class UserController
         }
 
         $user = $_SESSION['user_id'];
-        $modelUser = new User();
-        $profileUsers = $modelUser->getById($user); //проверяем пользователя по ID
+
+        $profileUsers = $this->modelUser->getById($user); //проверяем пользователя по ID
 
         require_once './Views/my_profile.php';
     }
@@ -168,14 +170,11 @@ class UserController
             $email = $_POST['email'];
             $password = $_POST['password'];
 
-            $modelUser = new User();
-            $result = $modelUser->getByEmail($email); // Проверяем пользователя по email
+            $result = $this->modelUser->getByEmail($email); // Проверяем пользователя по email
 
             if (!$result) {
 
-                $modelUser = new User();
-                $modelUser->update($name, $email, $password, $userId); // Редактируем существующего пользователя
-
+                $this->modelUser->update($name, $email, $password, $userId); // Редактируем существующего пользователя
                 header("Location: /edit_profile");
             }
         }

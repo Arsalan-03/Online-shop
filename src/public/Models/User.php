@@ -4,6 +4,11 @@ require_once 'Models/Database.php';
 
 class User extends Database
 {
+    public int $id;
+    public string $name;
+    public string $email;
+    public string $password;
+
     public function create($name, $email, $password): void
     {
         $statement = $this->getPdo()->prepare("INSERT INTO users(name, email, password) VALUES(:name, :email, :password)");

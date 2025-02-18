@@ -16,7 +16,7 @@
             <img src="<?php echo $cartProduct['image']; ?>" alt="Товар 1" class="product-image">
             <div class="item-details">
                 <h3><?php echo $cartProduct['name']; ?></h3>
-                <p><?php echo 'Цена: ' . $cartProduct['price'] . '₽'; ?> </p>
+                <p><?php echo '$' . $cartProduct['price'] . '₽'; ?> </p>
                 <input type="number" value="1" min="1" class="item-quantity">
             </div>
             <button class="remove-item">Удалить</button>

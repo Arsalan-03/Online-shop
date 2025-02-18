@@ -2,6 +2,10 @@
 
 class UserProduct extends Database
 {
+    public int $id;
+    public int $userId;
+    public int $productId;
+    public int $quantity;
 
     public function getOneByUserIdByProductId($userId, $productId)
     {
@@ -29,6 +33,26 @@ class UserProduct extends Database
         $statement->execute(['user_id' => $userId]);
 
         return $statement->fetchAll();
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function getProductId(): int
+    {
+        return $this->productId;
+    }
+
+    public function getQuantity(): int
+    {
+        return $this->quantity;
     }
 
 }
