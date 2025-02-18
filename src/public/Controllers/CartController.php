@@ -1,5 +1,4 @@
 <?php
-
 require_once './Models/UserProduct.php';
 require_once './Models/Product.php';
 class CartController
@@ -26,12 +25,6 @@ class CartController
             $cartProducts[] = $product;
         }
 
-        $totalPrice = 0;
-         foreach ($cartProducts as $cartProduct) {
-             foreach ($userProducts as $userProduct) {
-                 $totalPrice += $cartProduct['price'] * $userProduct['quantity'];
-             }
-         }
         require_once './Views/cart.php';
     }
 

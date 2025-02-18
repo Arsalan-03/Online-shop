@@ -145,6 +145,14 @@ class UserController
 
     public function getEditProfileForm(): void
     {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit();
+        }
         require_once './Views/edit_profile.php';
     }
 
@@ -214,5 +222,15 @@ class UserController
             $errors['password'] = 'Заполните поле Password';
         }
         return $errors;
+    }
+
+    public function logout(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+
+            header("Location: /login");
+            exit();
+        }
     }
 }

@@ -16,6 +16,7 @@ class ProductController
         $products = $modelProduct->getAll();
 
         require_once './Views/catalog.php';
+        exit();
     }
 
     public function addProduct(): void
@@ -31,14 +32,13 @@ class ProductController
 
             // Проверяем, есть ли продукт в таблице
             $modelUserProduct = new UserProduct();
-            $result = $modelUserProduct->getOneByUserIdByProductId($productId, $userId); // Проверяем продукт по userId и ProductId
+            $result = $modelUserProduct->getOneByUserIdByProductId($userId, $productId); // Проверяем продукт по userId и ProductId
 
-            if ($result) {
-               $modelUserProduct = new UserProduct();
-               $modelUserProduct->updateQuantity($productId, $quantity, $userId); // Обновляем количество товара
-            } else {
-                $modelUserProduct = new UserProduct();
+            if ($result === false) {
                 $modelUserProduct->add($userId, $productId, $quantity); // Добавляем новый товар в корзину
+            } else {
+                $modelUserProduct->updateQuantity($productId, $quantity, $userId); // Обновляем количество товара
+
             }
         }
         header("Location: /main");

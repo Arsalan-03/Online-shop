@@ -19,7 +19,11 @@
                     <li><a href="#">UX Design</a></li>
                 </ul>
             </li>
-            <li><a href="#">Contacts</a></li>
+            <li>
+                <form action="/logout" method="post">
+                   <a> <button>Log Out</button> </a>
+                </form>
+            </li>
         </ul>
     </nav>
 </header>
@@ -80,7 +84,7 @@
 
      body {
          height: 100vh;
-         background-color: white;
+         background-color: mediumpurple;
          background-size: cover;
          background-position: center;
      }
