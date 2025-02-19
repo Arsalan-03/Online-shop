@@ -1,6 +1,8 @@
 <?php
 
-class UserProduct extends Database
+require_once './../Models/Model.php';
+
+class UserProduct extends Model
 {
     public int $id;
     public int $userId;

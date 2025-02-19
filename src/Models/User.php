@@ -1,8 +1,8 @@
 <?php
 
-require_once 'Models/Database.php';
+require_once './../Models/Model.php';
 
-class User extends Database
+class User extends Model
 {
     public int $id;
     public string $name;

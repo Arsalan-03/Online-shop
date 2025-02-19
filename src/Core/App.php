@@ -1,7 +1,6 @@
 <?php
 class App
 {
-
     private array $routes = [
         '/registration' => [
             'GET' => [
@@ -78,7 +77,7 @@ class App
                 $class = $handler['class'];
                 $method = $handler['method'];
 
-                require_once "./Controllers/$class.php";
+//                require_once "./../Controllers/$class.php";
                 $controller = new $class();
                 $controller->$method();
             } else {
@@ -86,7 +85,7 @@ class App
             }
         } else {
             http_response_code(404);
-            require_once './Views/404.php';
+            require_once './../Views/404.php';
             exit();
         }
     }

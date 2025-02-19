@@ -1,8 +1,8 @@
 <?php
 
-class Database
+class Model
 {
-    protected $pdo;
+    protected PDO $pdo;
 
     public function getPdo($host = 'db', $port = '5432', $dbname = 'postgres', $user = 'arsik', $password = '0000')
     {

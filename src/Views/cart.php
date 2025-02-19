@@ -17,7 +17,7 @@
             <div class="item-details">
                 <h3><?php echo $cartProduct['name']; ?></h3>
                 <p><?php echo '$' . $cartProduct['price'] . '₽'; ?> </p>
-                <input type="number" value="1" min="1" class="item-quantity">
+                <input type="number" value="<?php echo $cartProduct['quantity']; ?>" min="1" class="item-quantity">
             </div>
             <button class="remove-item">Удалить</button>
         </li>
@@ -25,7 +25,7 @@
     </ul>
     <div class="cart-summary">
         <h3>Итого:</h3>
-        <p class="total-price"><?php echo $totalPrice; ?></p>
+        <p class="total-price"><?php echo '$' . $cartProduct['quantity'] * $cartProduct['price']; ?></p>
         <button class="checkout-button">Оформить заказ</button>
     </div>
 </div>

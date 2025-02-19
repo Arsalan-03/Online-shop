@@ -1,18 +1,19 @@
 <?php
 
-require_once './Models/Product.php';
-require_once './Models/UserProduct.php';
+require_once './../Models/Product.php';
+require_once './../Models/UserProduct.php';
 
 class ProductController
 {
-    private $modelProduct;
-    private $modelUserProduct;
+    private Product $modelProduct;
+    private UserProduct $modelUserProduct;
 
     public function __construct()
     {
         $this->modelProduct = new Product();
         $this->modelUserProduct = new UserProduct();
     }
+
     public function getCatalog(): void
     {
         session_start();
@@ -22,7 +23,7 @@ class ProductController
 
         $products = $this->modelProduct->getAll();
 
-        require_once './Views/catalog.php';
+        require_once './../Views/catalog.php';
         exit();
     }
 
@@ -56,7 +57,7 @@ class ProductController
         $errors = [];
         //Валидация товара
         if (isset($date['product_id'])) {
-            $productId = (int) $date['product_id'];
+            $productId = (int)$date['product_id'];
 
             $result = $this->modelProduct->getOneById($productId);
 

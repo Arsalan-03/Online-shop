@@ -1,18 +1,21 @@
 <?php
 
-require_once './Models/User.php';
+require_once '../Models/User.php';
 
 class UserController
 {
-    private $modelUser;
+    private User $modelUser;
+
     public function __construct()
     {
         $this->modelUser = new User();
     }
+
     public function getRegistrationForm(): void
     {
-        require_once './Views/registration.php';
+        require_once '../Views/registration.php';
     }
+
     public function registrate(): void
     {
         $errors = $this->RegValidate($_POST);
@@ -27,11 +30,11 @@ class UserController
             header("Location: /login");
             exit();
         } else {
-            require_once './Views/registration.php';
+            require_once '../Views/registration.php';
         }
     }
 
-    private function regValidate(array $data):array
+    private function regValidate(array $data): array
     {
         $errors = [];
 
@@ -86,12 +89,12 @@ class UserController
 
     public function getLoginForm()
     {
-        require_once './Views/login.php';
+        require_once '../Views/login.php';
     }
 
     public function login(): void
     {
-        $errors= $this->logValidate($_POST);
+        $errors = $this->logValidate($_POST);
 
         if (empty($errors)) {
             $login = $_POST['email'];
@@ -113,10 +116,10 @@ class UserController
                 }
             }
         }
-        require_once './Views/login.php';
+        require_once '../Views/login.php';
     }
 
-    private function logValidate(array $data):array
+    private function logValidate(array $data): array
     {
         $errors = [];
 
@@ -142,7 +145,7 @@ class UserController
 
         $profileUsers = $this->modelUser->getById($user); //проверяем пользователя по ID
 
-        require_once './Views/my_profile.php';
+        require_once '../Views/my_profile.php';
     }
 
     public function getEditProfileForm(): void
@@ -155,7 +158,7 @@ class UserController
             header("Location: /login");
             exit();
         }
-        require_once './Views/edit_profile.php';
+        require_once '../Views/edit_profile.php';
     }
 
     public function editProfile(): void
@@ -179,7 +182,7 @@ class UserController
             }
         }
 
-        require_once './Views/edit_profile.php';
+        require_once '../Views/edit_profile.php';
     }
 
     private function editProfileValidate(array $data): array
@@ -206,7 +209,7 @@ class UserController
                 if ($pos === false) {
                     $errors['email'] = 'Некоректно ведён поле email';
                 }
-                }
+            }
         } else {
             $errors['email'] = 'Заполните поле email';
         }
@@ -225,9 +228,10 @@ class UserController
 
     public function logout(): void
     {
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_destroy();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
 
+            session_destroy();
             header("Location: /login");
             exit();
         }

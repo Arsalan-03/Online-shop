@@ -1,8 +1,7 @@
 <?php
+require_once './../Models/Model.php';
 
-require_once 'Models/Database.php';
-
-class Product extends Database
+class Product extends Model
 {
     public int $id;
     public string $image;
