@@ -12,7 +12,7 @@
             <li><a href="#">Home</a></li>
             <li><a href="/my_profile">Profile</a></li>
             <li><a href="/cart">Cart</a></li>
-            <li><a href="#">Portfolio</a></li>
+            <li><a href="/order">Order</a></li>
             <li><a href="#">Design &bigtriangledown;</a>
                 <ul>
                     <li><a href="#">UI Design</a></li>

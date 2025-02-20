@@ -4,7 +4,8 @@ $autoloader = function (string $className) {
 
   $directories = [
       '../Core',
-      '../Controllers'
+      '../Controllers',
+      '../Models'
   ];
 
   foreach ($directories as $directory) {

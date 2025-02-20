@@ -1,7 +1,5 @@
 <?php
 
-require_once '../Models/User.php';
-
 class UserController
 {
     private User $modelUser;
@@ -128,7 +126,7 @@ class UserController
         }
 
         if (!isset($data['password'])) {
-            $errors['password'] = 'Заполните поле password';
+            $errors['email'] = 'Заполните поле password';
         }
 
         return $errors;

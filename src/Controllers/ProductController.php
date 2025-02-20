@@ -1,8 +1,4 @@
 <?php
-
-require_once './../Models/Product.php';
-require_once './../Models/UserProduct.php';
-
 class ProductController
 {
     private Product $modelProduct;
@@ -45,7 +41,7 @@ class ProductController
             if ($result === false) {
                 $this->modelUserProduct->add($userId, $productId, $quantity); // Добавляем новый товар в корзину
             } else {
-                $this->modelUserProduct->updateQuantity($productId, $quantity, $userId); // Обновляем количество товара
+                $this->modelUserProduct->updateQuantityPlus($productId, $quantity, $userId); // Обновляем количество товара
 
             }
         }

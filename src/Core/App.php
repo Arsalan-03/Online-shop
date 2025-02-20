@@ -62,6 +62,16 @@ class App
                 'method' => 'logout'
             ],
         ],
+        '/order' => [
+            'GET' => [
+                'class' => 'OrderController',
+                'method' => 'getOrderForm'
+            ],
+            'POST' => [
+                'class' => 'OrderController',
+                'method' => 'Order'
+            ],
+        ],
     ];
 
     public function run(): void
@@ -77,7 +87,6 @@ class App
                 $class = $handler['class'];
                 $method = $handler['method'];
 
-//                require_once "./../Controllers/$class.php";
                 $controller = new $class();
                 $controller->$method();
             } else {

@@ -17,11 +17,17 @@ class UserProduct extends Model
         return $stmt->fetch();
     }
 
-    public function updateQuantity($productId, $quantity, $userId): void
+    public function updateQuantityPlus($productId, $quantity, $userId): void
     {
         $stmt = $this->getPdo()->prepare("UPDATE user_products SET quantity = quantity + :quantity WHERE product_id = :product_id AND user_id = :user_id");
         $stmt->execute(['quantity' => $quantity, 'product_id' => $productId, 'user_id' => $userId]);
     }
+
+//    public function updateQuantityPlus($productId, $quantity, $userId): void
+//    {
+//        $stmt = $this->getPdo()->prepare("UPDATE user_products SET quantity = quantity - :quantity WHERE product_id = :product_id AND user_id = :user_id");
+//        $stmt->execute(['quantity' => $quantity, 'product_id' => $productId, 'user_id' => $userId]);
+//    }
 
     public function add($userId, $productId, $quantity): void
     {

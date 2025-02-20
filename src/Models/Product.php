@@ -22,5 +22,10 @@ class Product extends Model
         return $stmt->fetch();
     }
 
+    public function deleteProductByUserId(int $userId)
+    {
+        $stmt = $this->getPdo()->prepare("DELETE FROM products WHERE id = :user_id");
+        $stmt->execute(['user_id' => $userId]);
+    }
 
 }

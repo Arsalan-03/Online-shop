@@ -1,6 +1,4 @@
 <?php
-require_once './../Models/UserProduct.php';
-require_once './../Models/Product.php';
 
 class CartController
 {
@@ -31,11 +29,17 @@ class CartController
 
             $product = $this->modelProduct->getOneById($productId); //Достаем данные продукта, который добавил текущий польлзователь
             $product['quantity'] = $userProduct['quantity'];
+            $product['product_id'] = $userProduct['product_id'];
 
             $cartProducts[] = $product;
         }
 
         require_once './../Views/cart.php';
     }
+
+//    public function updateQuantityPlus()
+//    {
+//
+//    }
 
 }

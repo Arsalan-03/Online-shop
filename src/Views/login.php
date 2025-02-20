@@ -17,6 +17,7 @@
         <span class="icon">
           <i class="fa-solid fa-envelope"></i>
         </span>
+            <label style="color: red"> <?php if (isset($errors['email'])) echo $errors['email']; ?></label>
             <input type="email" name="email" required>
             <label for="">Login</label>
         </div>
