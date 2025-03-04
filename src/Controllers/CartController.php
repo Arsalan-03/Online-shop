@@ -1,4 +1,7 @@
 <?php
+namespace Controllers;
+use Models\Product;
+use Models\UserProduct;
 
 class CartController
 {
@@ -20,26 +23,28 @@ class CartController
 
         $userId = $_SESSION['user_id'];
 
-        $userProducts = $this->modelUserProduct->getByUserId($userId); //Достаем идентификаторы продукта, который добавил текущий пользователь
+        $userProducts = $this->modelUserProduct->getAllByUserId($userId); //Достаем идентификаторы продукта, который добавил текущий пользователь
 
         $cartProducts = [];
-
-        foreach ($userProducts as $userProduct) {
-            $productId = $userProduct['product_id'];
-
-            $product = $this->modelProduct->getOneById($productId); //Достаем данные продукта, который добавил текущий польлзователь
-            $product['quantity'] = $userProduct['quantity'];
-            $product['product_id'] = $userProduct['product_id'];
-
-            $cartProducts[] = $product;
+        if (empty($userProducts)) {
+            header("Location: /main");
+            exit();
         }
 
+        $cartProducts = $this->newCartProducts($userProducts);
         require_once './../Views/cart.php';
     }
 
-//    public function updateQuantityPlus()
-//    {
-//
-//    }
+    private function newCartProducts(array $userProducts): array
+    {
+        $newCartProducts = [];
+
+        foreach ($userProducts as $userProduct) {
+            $product = $this->modelProduct->getOneById($userProduct->getProductId());
+            $userProduct->setProduct($product);
+            $newCartProducts[] = $userProduct;
+        }
+        return $newCartProducts;
+    }
 
 }

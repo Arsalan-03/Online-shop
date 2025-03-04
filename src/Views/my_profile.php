@@ -1,13 +1,11 @@
 
 <section class="profile">
     <header class="header">
-        <?php if (isset($profileUsers)) {
-            foreach ($profileUsers as $profileUser): ?>
         <div class="details">
             <img src="https://sun9-2.userapi.com/impg/RY0bKDDASCzttLRAZP_n9IkG3cz9zOh-aWjdZg/n8pgOA1sGk0.jpg?size=1620x2160&quality=95&sign=3b57c8162f2f66601c766b804eb31edf&type=album" alt="John Doe" class="profile-pic">
-            <h1 class="heading"><?php echo $profileUser['name']; ?></h1>
+            <h1 class="heading"><?php echo $profileUsers->getName(); ?></h1>
             <div class="email">
-                <p><?php echo $profileUser['email']; ?></p>
+                <p><?php echo $profileUsers->getEmail(); ?></p>
             </div>
             <div class="stats">
                 <div class="col-4">
@@ -27,7 +25,6 @@
                 <a href="/edit_profile"><h2>Редактировать</h2> </a>
             </div>
         </div>
-        <?php endforeach; } ?>
     </header>
 </section>
 

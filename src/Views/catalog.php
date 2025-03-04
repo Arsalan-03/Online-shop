@@ -9,7 +9,7 @@
     <a href="#" class="logo"> LOGO </a>
     <nav>
         <ul>
-            <li><a href="#">Home</a></li>
+            <li><a href="/myOrders">Purchase</a></li>
             <li><a href="/my_profile">Profile</a></li>
             <li><a href="/cart">Cart</a></li>
             <li><a href="/order">Order</a></li>
@@ -39,7 +39,7 @@
                 <!-- Изображение-ссылка товара -->
                 <a href="#" class="card__image">
                     <img
-                            src="<?php echo $product['image']; ?>"
+                            src="<?php echo $product->getImage(); ?>"
                             alt="Apple IPhone 14 PRO Max Gold"
                     />
                 </a>
@@ -50,16 +50,16 @@
             <div class="card__bottom">
                 <!-- Цены на товар (с учетом скидки и без)-->
                 <div class="card__prices">
-                    <div class="card__price card__price--discount"><?php echo $product['price']; ?></div>
+                    <div class="card__price card__price--discount"><?php echo $product->getPrice(); ?></div>
                     <div class="card__price card__price--common">150 000</div>
                 </div>
                 <!-- Ссылка-название товара -->
                 <a href="#" class="card__title">
-                    <?php echo $product['name']; ?>
+                    <?php echo $product->getName(); ?>
                 </a>
 <!--                 Кнопка добавить в корзину-->
                 <form action="/addProduct" method="post">
-                <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+                <input type="hidden" name="product_id" value="<?php echo $product->getId(); ?>">
                     <input type="hidden" name="quantity" value="1">
                 <button class="card__add">В корзину</button>
                 </form>

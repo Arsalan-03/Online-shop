@@ -13,21 +13,21 @@
         foreach ($cartProducts as $cartProduct): ?>
     <ul class="cart-items">
         <li class="cart-item">
-            <img src="<?php echo $cartProduct['image']; ?>" alt="Товар 1" class="product-image">
+            <img src="<?php echo $cartProduct->getProduct()->getImage(); ?>" alt="Товар 1" class="product-image">
             <div class="item-details">
-                <h3><?php echo $cartProduct['name']; ?></h3>
-                <p><?php echo '$' . $cartProduct['price'] . '₽'; ?> </p>
+                <h3><?php echo $cartProduct->getProduct()->getName(); ?></h3>
+                <p><?php echo '$' . $cartProduct->getProduct()->getPrice() . '₽'; ?> </p>
 
                 <div style="display: flex; align-items: center;">
                     <form action="/deleteProduct" method="post" style="margin: 0;">
-                        <input type="hidden" name="product_id" value="<?php echo $cartProduct['product_id']; ?>">
+<!--                        <input type="hidden" name="product_id" value="--><?php //echo $cartProduct['product_id']; ?><!--">-->
                         <button type="submit">-</button>
                     </form>
 
-                    <span style="margin: 0 10px;"><?php echo $cartProduct['quantity']; ?></span>
+<!--                    <span style="margin: 0 10px;">--><?php //echo $cartProduct->getQuantity(); ?><!--</span>-->
 
                     <form action="/addProduct" method="post" style="margin: 0;">
-                        <input type="hidden" name="product_id" value="<?php echo $cartProduct['product_id']; ?>">
+<!--                        <input type="hidden" name="product_id" value="--><?php //echo $cartProduct['product_id']; ?><!--">-->
                         <button type="submit">+</button>
                     </form>
                 </div>
@@ -39,7 +39,7 @@
     </ul>
     <div class="cart-summary">
         <h3>Итого:</h3>
-        <p class="total-price"><?php echo '$' . $cartProduct['quantity'] * $cartProduct['price']; ?></p>
+        <p class="total-price"><?php echo '$' . $cartProduct->getQuantity() * $cartProduct->getProduct()->getPrice(); ?></p>
         <button class="checkout-button">Оформить заказ</button>
     </div>
 </div>

@@ -1,4 +1,8 @@
 <?php
+namespace Controllers;
+
+use Models\Product;
+use Models\UserProduct;
 class ProductController
 {
     private Product $modelProduct;
@@ -35,14 +39,14 @@ class ProductController
 
 
             // Проверяем, есть ли продукт в таблице
-
             $result = $this->modelUserProduct->getOneByUserIdByProductId($userId, $productId); // Проверяем продукт по userId и ProductId
 
             if ($result === false) {
                 $this->modelUserProduct->add($userId, $productId, $quantity); // Добавляем новый товар в корзину
             } else {
                 $this->modelUserProduct->updateQuantityPlus($productId, $quantity, $userId); // Обновляем количество товара
-
+                header("Location: /order");
+                exit();
             }
         }
         header("Location: /main");
@@ -80,5 +84,28 @@ class ProductController
             $errors['quantity'] = 'Заполните поле Quantity';
         }
         return $errors;
+    }
+
+    public function deleteProduct(): void
+    {
+        $errors = $this->addProductValidate($_POST);
+        if (empty($errors)) {
+
+            session_start();
+            $userId = $_SESSION['user_id'];
+            $productId = $_POST['product_id'];
+            $quantity = $_POST['quantity'];
+
+            // Проверяем, есть ли продукт в таблице
+            $result = $this->modelUserProduct->getOneByUserIdByProductId($userId, $productId); // Проверяем продукт по userId и ProductId
+
+            if ($result === false) {
+                $errors[] = 'Добавьте товар в корзину';
+            } else {
+                $this->modelUserProduct->updateQuantityMinus($productId, $quantity, $userId);
+                header("Location: /order");
+                exit();
+            }
+        }
     }
 }

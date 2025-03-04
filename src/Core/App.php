@@ -1,78 +1,9 @@
 <?php
+namespace Core;
+
 class App
 {
-    private array $routes = [
-        '/registration' => [
-            'GET' => [
-                'class' => 'UserController',
-                'method' => 'getRegistrationForm'
-            ],
-            'POST' => [
-                'class' => 'UserController',
-                'method' => 'registrate'
-            ],
-        ],
-        '/login' => [
-            'GET' => [
-                'class' => 'UserController',
-                'method' => 'getLoginForm'
-            ],
-            'POST' => [
-                'class' => 'UserController',
-                'method' => 'login'
-            ],
-        ],
-        '/main' => [
-            'GET' => [
-                'class' => 'ProductController',
-                'method' => 'getCatalog'
-            ],
-        ],
-        '/my_profile' => [
-            'GET' => [
-                'class' => 'UserController',
-                'method' => 'myProfile'
-            ],
-        ],
-        '/edit_profile' => [
-            'GET' => [
-                'class' => 'UserController',
-                'method' => 'getEditProfileForm'
-            ],
-            'POST' => [
-                'class' => 'UserController',
-                'method' => 'editProfile'
-            ],
-        ],
-        '/addProduct' => [
-            'POST' => [
-                'class' => 'ProductController',
-                'method' => 'addProduct'
-            ],
-        ],
-        '/cart' => [
-            'GET' => [
-                'class' => 'CartController',
-                'method' => 'getCartForm'
-            ]
-        ],
-        '/logout' => [
-            'POST' => [
-                'class' => 'UserController',
-                'method' => 'logout'
-            ],
-        ],
-        '/order' => [
-            'GET' => [
-                'class' => 'OrderController',
-                'method' => 'getOrderForm'
-            ],
-            'POST' => [
-                'class' => 'OrderController',
-                'method' => 'Order'
-            ],
-        ],
-    ];
+    private array $routes = [];
 
     public function run(): void
     {
@@ -97,5 +28,13 @@ class App
             require_once './../Views/404.php';
             exit();
         }
+    }
+
+    public function addRoute(string $route, string $routeMethod, string $className, string $method): void
+    {
+        $this->routes[$route][$routeMethod] = [
+            'class' => $className,
+            'method' => $method
+        ];
     }
 }

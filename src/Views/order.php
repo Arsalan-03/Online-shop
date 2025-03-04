@@ -8,6 +8,7 @@
         <form action="/order" method="post">
             <h6>Contact information</h6>
             <div class="form-control">
+                <label style="color: red"> <?php if (isset($errors['email'])) echo $errors['email']; ?></label>
                 <label for="email">E-mail</label>
                 <div>
                     <span class="fa fa-envelope"></span>
@@ -15,6 +16,7 @@
                 </div>
             </div>
             <div class="form-control">
+                <label style="color: red"> <?php if (isset($errors['phone'])) echo $errors['phone']; ?></label>
                 <label for="phone">Phone</label>
                 <div>
                     <span class="fa fa-phone"></span>
@@ -24,6 +26,7 @@
             <br>
             <h6>Shipping address</h6>
             <div class="form-control">
+                <label style="color: red"> <?php if (isset($errors['name'])) echo $errors['name']; ?></label>
                 <label for="name">Full name</label>
                 <div>
                     <span class="fa fa-user-circle"></span>
@@ -31,6 +34,7 @@
                 </div>
             </div>
             <div class="form-control">
+                <label style="color: red"> <?php if (isset($errors['address'])) echo $errors['address']; ?></label>
                 <label for="address">Address</label>
                 <div>
                     <span class="fa fa-home"></span>
@@ -38,6 +42,7 @@
                 </div>
             </div>
             <div class="form-control">
+                <label style="color: red"> <?php if (isset($errors['city'])) echo $errors['city']; ?></label>
                 <label for="city">City</label>
                 <div>
                     <span class="fa fa-building"></span>
@@ -46,6 +51,7 @@
             </div>
             <div class="form-group">
                 <div class="form-control">
+                    <label style="color: red"> <?php if (isset($errors['country'])) echo $errors['country']; ?></label>
                     <label for="country">Country</label>
                     <div>
                         <span class="fa fa-globe"></span>
@@ -60,6 +66,7 @@
                     </div>
                 </div>
                 <div class="form-control">
+                    <label style="color: red"> <?php if (isset($errors['postalCode'])) echo $errors['postalCode']; ?></label>
                     <label for="postalCode">Postal code</label>
                     <div>
                         <span class="fa fa-archive"></span>
@@ -80,24 +87,26 @@
     <section class="checkout-details">
         <div class="checkout-details-inner">
             <div class="checkout-lists">
-                <?php if (isset($cartProducts)) {
-                foreach ($cartProducts as $cartProduct): ?>
+                <?php if (isset($newOrderProducts)) {
+                foreach ($newOrderProducts as $newOrderProduct): ?>
                 <div class="card">
-                    <div class="card-image"><img src="<?php echo $cartProduct['image']; ?>" alt=""></div>
+                    <div class="card-image"><img src="<?php echo $newOrderProduct->getProduct()->getImage(); ?>" alt=""></div>
                     <div class="card-details">
-                        <div class="card-name"><?php echo $cartProduct['name']; ?></div>
-                        <div class="card-price"><?php echo '$' . $cartProduct['price'] . '₽'; ?> <span>$94.99</span></div>
+                        <div class="card-name"><?php echo $newOrderProduct->getProduct()->getName(); ?></div>
+                        <div class="card-price"><?php echo '$' . $newOrderProduct->getProduct()->getPrice() . '₽'; ?> <span>$94.99</span></div>
                         <div class="card-wheel">
                             <div style="display: flex; align-items: center;">
                                 <form action="/deleteProduct" method="post" style="margin: 0;">
-                                    <input type="hidden" name="product_id" value="<?php echo $cartProduct['product_id']; ?>">
+                                    <input type="hidden" name="product_id" value="<?php echo $newOrderProduct->getProductId(); ?>">
+                                    <input type="hidden" name="quantity" value="1">
                                     <button type="submit">-</button>
                                 </form>
 
-                                <span style="margin: 0 10px;"><?php echo $cartProduct['quantity']; ?></span>
+                                <span style="margin: 0 10px;"><?php echo $newOrderProduct->getQuantity(); ?></span>
 
                                 <form action="/addProduct" method="post" style="margin: 0;">
-                                    <input type="hidden" name="product_id" value="<?php echo $cartProduct['product_id']; ?>">
+                                    <input type="hidden" name="product_id" value="<?php echo $newOrderProduct->getProductId(); ?>">
+                                    <input type="hidden" name="quantity" value="1">
                                     <button type="submit">+</button>
                                 </form>
                             </div>
@@ -105,14 +114,17 @@
                     </div>
                 </div>
                 <?php endforeach;}?>
-            </div>
-            <div class="checkout-shipping">
-                <h6>Shipping</h6>
-                <p>$19</p>
+
             </div>
             <div class="checkout-total">
                 <h6>Total</h6>
-                <p>$148.98</p>
+                <p><?php
+                     $totalPrice = 0;
+                     foreach ($newOrderProducts as $newOrderProduct) {
+                         $totalPrice += $newOrderProduct->getProduct()->getPrice() * $newOrderProduct->getQuantity();
+                     }
+                     echo "$" . $totalPrice;
+                    ?></p>
             </div>
         </div>
     </section>
@@ -129,6 +141,7 @@
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+        background-color: lightgrey;
     }
     body {
         font-family: "Poppins", sans-serif;
@@ -136,7 +149,8 @@
         width: 70%;
         margin: 0px auto;
         padding: 50px 0px 0px;
-        color: #4E5150;
+        color: black;
+
 
 
         header {
@@ -246,9 +260,10 @@
                 width: 25%;
 
                 .checkout-details-inner {
-                    background: #F2F2F2;
+                    background: darkviolet;
                     border-radius: 10px;
                     padding: 20px;
+
 
 
                     .checkout-lists {
@@ -281,9 +296,9 @@
                                     font-weight: 500;
                                 }
                                 .card-price {
-                                    font-size: 10px;
-                                    font-weight: 500;
-                                    color: #F2994A;
+                                    font-size: 14px;
+                                    font-weight: 900;
+                                    color: black;
                                     margin-top: 5px;
 
                                     span {
@@ -322,14 +337,14 @@
 
                     .checkout-shipping, .checkout-total {
                         display: flex;
-                        font-size: 16px;
+                        font-size: 20px;
                         padding: 5px 0px;
                         border-top: 1px solid #BDBDBD;
                         justify-content: space-between;
 
                         p {
-                            font-size: 10px;
-                            font-weight: 500;
+                            font-size: 16px;
+                            font-weight: 900;
                         }
                     }
                 }

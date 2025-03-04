@@ -38,7 +38,7 @@
         <div class="link">
             <p>
                 Don't have an account?
-                <a href="#">Register</a>
+                <a href="/registration">Register</a>
             </p>
         </div>
     </form>

@@ -1,4 +1,7 @@
 <?php
+namespace Controllers;
+
+use Models\User;
 
 class UserController
 {
@@ -56,10 +59,8 @@ class UserController
                 if ($pos === false) {
                     $errors['email'] = 'Некоректно ведён поле email';
                 } elseif (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
-                    $result = $this->modelUser->getByEmail($email); //ищем пользователя по email
-
-                    if ($result) {
+                    $user = $this->modelUser->getByEmail($email); //ищем пользователя по email
+                    if ($user) {
                         $errors['email'] = 'email уже существует';
                     }
                 }
@@ -103,10 +104,10 @@ class UserController
             if ($data === false) {
                 $errors['email'] = 'Логин или пароль указаны неверно';
             } else {
-                $passwordFromDb = $data['password'];
+                $passwordFromDb = $data->getPassword();
                 if (password_verify($password, $passwordFromDb)) {
                     session_start();
-                    $_SESSION['user_id'] = $data['id'];
+                    $_SESSION['user_id'] = $data->getId();
 
                     header("Location: /main");
                 } else {
@@ -139,10 +140,8 @@ class UserController
             header("Location: /login.php");
         }
 
-        $user = $_SESSION['user_id'];
-
-        $profileUsers = $this->modelUser->getById($user); //проверяем пользователя по ID
-
+        $userId = $_SESSION['user_id'];
+        $profileUsers = $this->modelUser->getById($userId); //проверяем пользователя по ID
         require_once '../Views/my_profile.php';
     }
 
@@ -174,7 +173,6 @@ class UserController
             $result = $this->modelUser->getByEmail($email); // Проверяем пользователя по email
 
             if (!$result) {
-
                 $this->modelUser->update($name, $email, $password, $userId); // Редактируем существующего пользователя
                 header("Location: /edit_profile");
             }

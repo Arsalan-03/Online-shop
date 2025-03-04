@@ -1,16 +1,23 @@
 <?php
+namespace Controllers;
+use Models\Order;
+use Models\OrderProduct;
+use Models\Product;
+use Models\UserProduct;
 
 class OrderController
 {
     private Product $modelProduct;
     private UserProduct $modelUserProduct;
     private Order $modelOrder;
+    private OrderProduct $modelOrderProduct;
 
     public function __construct()
     {
         $this->modelProduct = new Product();
         $this->modelUserProduct = new UserProduct();
         $this->modelOrder = new Order();
+        $this->modelOrderProduct = new OrderProduct();
     }
     public function getOrderForm(): void
     {
@@ -24,25 +31,28 @@ class OrderController
         }
 
         $userId = $_SESSION['user_id'];
-
-        $userProducts = $this->modelUserProduct->getByUserId($userId); //Достаем идентификаторы продукта, который добавил текущий пользователь
-
-        $cartProducts = [];
-
-        foreach ($userProducts as $userProduct) {
-            $productId = $userProduct['product_id'];
-
-            $product = $this->modelProduct->getOneById($productId); //Достаем данные продукта, который добавил текущий польлзователь
-            $product['quantity'] = $userProduct['quantity'];
-            $product['product_id'] = $userProduct['product_id'];
-
-            $cartProducts[] = $product;
+        $userProducts = $this->modelUserProduct->getAllByUserId($userId); //Достаем идентификаторы продукта, который добавил текущий пользователь
+        if (empty($userProducts)) {
+            header("Location: /main");
+            exit();
         }
-
+        $newOrderProducts = $this->newOrderProducts($userProducts);
         require_once './../Views/order.php';
     }
 
-    public function order()
+    private function newOrderProducts(array $userProducts): array
+    {
+        $newOrderProducts = [];
+
+        foreach ($userProducts as $userProduct) {
+            $product = $this->modelProduct->getOneById($userProduct->getProductId());
+            $userProduct->setProduct($product);
+            $newOrderProducts[] = $userProduct;
+        }
+        return $newOrderProducts;
+    }
+
+    public function order(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
@@ -65,17 +75,54 @@ class OrderController
             $country = $_POST['country'];
             $postalCode = $_POST['postalCode'];
 
-            $this->modelOrder->create($email, $phone, $fullName, $address, $city, $country, $postalCode);
+            $orderId = $this->modelOrder->create($userId, $email, $phone, $fullName, $address, $city, $country, $postalCode);
 
-//           $userProduct = $this->modelUserProduct->getByUserId($userId);
-//           $userID['user_id'] = $userProduct['user_id'];
-//           $productId['product_id'] = $userProduct['product_id'];
-//            ДОКОНЧИТЬ
+            $userProducts = $this->modelUserProduct->getAllByUserId($userId);
 
-            $this->modelProduct->deleteProductByUserId($userId);
-            header("Location: /order");
+            foreach ($userProducts as $userProduct) {
+                $productId = $userProduct->getProductId();
+                $quantity = $userProduct->getQuantity();
+                $this->modelOrderProduct->create($orderId, $productId, $quantity);
+            }
+
+            $this->modelUserProduct->deleteByUserId($userId);
+            $this->getOrderForm();
         }
          $this->getOrderForm();
+    }
+
+    public function getAllOrders(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit();
+        }
+
+        $userId = $_SESSION['user_id'];
+
+        $userOrders = $this->modelOrder->getAllByUserId($userId);
+        require_once './../Views/myOrders.php';
+    }
+
+    public function getUserOrders(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit();
+        }
+        $userId = $_SESSION['user_id'];
+        $orderId = $_POST['id'];
+
+        $newUserOrders = $this->modelOrder->getByIdAndUserId($orderId, $userId);
+        //доделать
+
+        require_once './../Views/userOrders.php';
     }
 
     public function orderValidate(array $data): array
