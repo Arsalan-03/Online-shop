@@ -15,22 +15,22 @@ Autoloader::register($path);
 
 $app = new App();
 
-$app->addRoute('/registration', 'GET', UserController::class, 'getRegistrationForm');
-$app->addRoute('/login', 'GET', UserController::class, 'getLoginForm');
-$app->addRoute('/main', 'GET', ProductController::class, 'getCatalog');
-$app->addRoute('/my_profile', 'GET', UserController::class, 'myProfile');
-$app->addRoute('/edit_profile', 'GET', UserController::class, 'getEditProfileForm');
-$app->addRoute('/cart', 'GET', CartController::class, 'getCartForm');
-$app->addRoute('/order', 'GET', OrderController::class, 'getOrderForm');
-$app->addRoute('/myOrders', 'GET', OrderController::class, 'getAllOrders');
+$app->get('/registration',  UserController::class, 'getRegistrationForm');
+$app->get('/login',  UserController::class, 'getLoginForm');
+$app->get('/main', ProductController::class, 'getCatalog');
+$app->get('/my_profile', UserController::class, 'myProfile');
+$app->get('/edit_profile',UserController::class, 'getEditProfileForm');
+$app->get('/cart', CartController::class, 'getCartForm');
+$app->get('/order', OrderController::class, 'getOrderForm');
+$app->get('/myOrders', OrderController::class, 'getAllOrders');
 
-$app->addRoute('/userOrders', 'POST', OrderController::class, 'getUserOrders');
-$app->addRoute('/registration', 'POST', UserController::class, 'registrate');
-$app->addRoute('/login', 'POST', UserController::class, 'login');
-$app->addRoute('/edit_profile', 'POST', UserController::class, 'editProfile');
-$app->addRoute('/addProduct', 'POST', ProductController::class, 'addProduct');
-$app->addRoute('/deleteProduct', 'POST', ProductController::class, 'deleteProduct');
-$app->addRoute('/logout', 'POST', UserController::class, 'logout');
-$app->addRoute('/order', 'POST', OrderController::class, 'order');
+$app->post('/userOrders',OrderController::class, 'getUserOrders');
+$app->post('/registration', UserController::class, 'registrate');
+$app->post('/login', UserController::class, 'login');
+$app->post('/edit_profile', UserController::class, 'editProfile');
+$app->post('/addProduct', ProductController::class, 'addProduct');
+$app->post('/deleteProduct', ProductController::class, 'deleteProduct');
+$app->post('/logout', UserController::class, 'logout');
+$app->post('/order',OrderController::class, 'order');
 
 $app->run();

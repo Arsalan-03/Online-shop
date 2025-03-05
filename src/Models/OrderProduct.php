@@ -19,6 +19,20 @@ class OrderProduct extends Model
        $stmt->execute(['order_id' => $orderId, 'product_id' => $productId, 'quantity' => $quantity]);
     }
 
+    public function getAllByOrderId(int $orderId): array
+    {
+        $stmt = $this->getPdo()->prepare("SELECT * FROM order_products WHERE order_id = :orderId");
+        $stmt->execute(['orderId' => $orderId]);
+        $orderProducts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $newOrderProducts = [];
+        foreach ($orderProducts as $orderProduct) {
+            $newOrderProducts[] = $this->hydrate($orderProduct);
+        }
+
+        return $newOrderProducts;
+    }
+
     private function hydrate(array $data): self|null
     {
         if (!$data)

@@ -96,6 +96,7 @@
                         <div class="card-price"><?php echo '$' . $newOrderProduct->getProduct()->getPrice() . '₽'; ?> <span>$94.99</span></div>
                         <div class="card-wheel">
                             <div style="display: flex; align-items: center;">
+
                                 <form action="/deleteProduct" method="post" style="margin: 0;">
                                     <input type="hidden" name="product_id" value="<?php echo $newOrderProduct->getProductId(); ?>">
                                     <input type="hidden" name="quantity" value="1">

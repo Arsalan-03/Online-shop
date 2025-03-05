@@ -20,14 +20,16 @@
 
                 <div style="display: flex; align-items: center;">
                     <form action="/deleteProduct" method="post" style="margin: 0;">
-<!--                        <input type="hidden" name="product_id" value="--><?php //echo $cartProduct['product_id']; ?><!--">-->
+                        <input type="hidden" name="product_id" value="<?php echo $cartProduct->getProductId(); ?>">
+                        <input type="hidden" name="quantity" value="1">
                         <button type="submit">-</button>
                     </form>
 
-<!--                    <span style="margin: 0 10px;">--><?php //echo $cartProduct->getQuantity(); ?><!--</span>-->
+                    <span style="margin: 0 10px;"><?php echo $cartProduct->getQuantity(); ?></span>
 
                     <form action="/addProduct" method="post" style="margin: 0;">
-<!--                        <input type="hidden" name="product_id" value="--><?php //echo $cartProduct['product_id']; ?><!--">-->
+                        <input type="hidden" name="product_id" value="<?php echo $cartProduct->getProductId(); ?>">
+                        <input type="hidden" name="quantity" value="1">
                         <button type="submit">+</button>
                     </form>
                 </div>

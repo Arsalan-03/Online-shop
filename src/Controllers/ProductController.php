@@ -3,21 +3,25 @@ namespace Controllers;
 
 use Models\Product;
 use Models\UserProduct;
+use Service\AuthService;
+
 class ProductController
 {
     private Product $modelProduct;
     private UserProduct $modelUserProduct;
+    private AuthService $authService;
 
     public function __construct()
     {
         $this->modelProduct = new Product();
         $this->modelUserProduct = new UserProduct();
+        $this->authService = new AuthService();
     }
 
     public function getCatalog(): void
     {
-        session_start();
-        if (!isset($_SESSION['user_id'])) {
+
+        if (!$this->authService->check()) {
             header("Location: /login");
         }
 
@@ -32,8 +36,8 @@ class ProductController
         $errors = $this->addProductValidate($_POST);
         if (empty($errors)) {
 
-            session_start();
-            $userId = $_SESSION['user_id'];
+            $user = $this->authService->getCurrentUser();
+            $userId = $user->getId();
             $productId = $_POST['product_id'];
             $quantity = $_POST['quantity'];
 
@@ -91,8 +95,9 @@ class ProductController
         $errors = $this->addProductValidate($_POST);
         if (empty($errors)) {
 
-            session_start();
-            $userId = $_SESSION['user_id'];
+
+            $user = $this->authService->getCurrentUser();
+            $userId = $user->getId();
             $productId = $_POST['product_id'];
             $quantity = $_POST['quantity'];
 

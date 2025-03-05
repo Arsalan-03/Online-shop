@@ -2,26 +2,29 @@
 namespace Controllers;
 use Models\Product;
 use Models\UserProduct;
+use Service\AuthService;
 
 class CartController
 {
     private Product $modelProduct;
     private UserProduct $modelUserProduct;
+    private AuthService $authService;
 
     public function __construct()
     {
         $this->modelProduct = new Product();
         $this->modelUserProduct = new UserProduct();
+        $this->authService = new AuthService();
     }
 
     public function getCartForm(): void
     {
-        session_start();
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header("Location: /login");
         }
 
-        $userId = $_SESSION['user_id'];
+        $user = $this->authService->getCurrentUser();
+        $userId = $user->getId();
 
         $userProducts = $this->modelUserProduct->getAllByUserId($userId); //Достаем идентификаторы продукта, который добавил текущий пользователь
 

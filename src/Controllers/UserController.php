@@ -1,15 +1,19 @@
 <?php
+
 namespace Controllers;
 
 use Models\User;
+use Service\AuthService;
 
 class UserController
 {
     private User $modelUser;
+    private AuthService $authService;
 
     public function __construct()
     {
         $this->modelUser = new User();
+        $this->authService = new AuthService();
     }
 
     public function getRegistrationForm(): void
@@ -86,7 +90,7 @@ class UserController
         return $errors;
     }
 
-    public function getLoginForm()
+    public function getLoginForm(): void
     {
         require_once '../Views/login.php';
     }
@@ -96,25 +100,16 @@ class UserController
         $errors = $this->logValidate($_POST);
 
         if (empty($errors)) {
-            $login = $_POST['email'];
-            $password = $_POST['password'];
+            $result = $this->authService->auth($_POST['email'], $_POST['password']);
 
-            $data = $this->modelUser->getByEmail($login); //проверяем пользователя по email
-
-            if ($data === false) {
-                $errors['email'] = 'Логин или пароль указаны неверно';
+            if ($result === true) {
+                header("Location: /main");
+                exit();
             } else {
-                $passwordFromDb = $data->getPassword();
-                if (password_verify($password, $passwordFromDb)) {
-                    session_start();
-                    $_SESSION['user_id'] = $data->getId();
-
-                    header("Location: /main");
-                } else {
-                    $errors['email'] = 'Логин или пароль указаны неверно';
-                }
+                $errors['email'] = 'Логин или пароль указаны неверно';
             }
         }
+        // Отображение формы логина с ошибками
         require_once '../Views/login.php';
     }
 
@@ -135,23 +130,18 @@ class UserController
 
     public function myProfile(): void
     {
-        session_start();
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: /login.php");
+        if (!$this->authService->check()) {
+            header("Location: /login");
+            exit();
         }
-
-        $userId = $_SESSION['user_id'];
-        $profileUsers = $this->modelUser->getById($userId); //проверяем пользователя по ID
+        $user = $this->authService->getCurrentUser(); //проверяем пользователя по ID
         require_once '../Views/my_profile.php';
     }
 
     public function getEditProfileForm(): void
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
 
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header("Location: /login");
             exit();
         }
@@ -163,8 +153,8 @@ class UserController
         $errors = $this->editProfileValidate($_POST);
 
         if (empty($errors)) {
-            session_start();
-            $userId = $_SESSION['user_id'];
+            $user = $this->authService->getCurrentUser();
+            $userId = $user->getId();
 
             $name = $_POST['name'];
             $email = $_POST['email'];
@@ -224,12 +214,8 @@ class UserController
 
     public function logout(): void
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-
-            session_destroy();
-            header("Location: /login");
-            exit();
-        }
+        $this->authService->logout();
+        header("Location: /login");
+        exit();
     }
 }

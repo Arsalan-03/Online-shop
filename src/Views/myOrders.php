@@ -17,9 +17,8 @@
             <?php if (isset($userOrders)) {
             foreach ($userOrders as $userOrder): ?>
             <li>
-                <form action="/userOrders" method="post">
+                <form action="/userOrders" method="POST">
                 <div class="order-item">
-<!--                  <input name="id" type="hidden"> <a href="/userOrders"> <span>Заказ --><?php //echo '#' . $userOrder->getId(); ?><!--</span></a>-->
                     <input type="hidden" name="id" value="<?php echo $userOrder->getId(); ?>">
                     <button>Заказ <?php echo '#' . $userOrder->getId(); ?></button>
                     <span class="status">Выполнен</span>
