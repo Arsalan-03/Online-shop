@@ -5,6 +5,7 @@ use Models\OrderProduct;
 use Models\Product;
 use Models\UserProduct;
 use Service\AuthService;
+use Service\OrderService;
 
 class OrderController
 {
@@ -13,6 +14,7 @@ class OrderController
     private Order $modelOrder;
     private OrderProduct $modelOrderProduct;
     private AuthService $authService;
+    private OrderService $orderService;
 
     public function __construct()
     {
@@ -21,6 +23,7 @@ class OrderController
         $this->modelOrder = new Order();
         $this->modelOrderProduct = new OrderProduct();
         $this->authService = new AuthService();
+        $this->orderService = new OrderService();
     }
     public function getOrderForm(): void
     {
@@ -43,7 +46,6 @@ class OrderController
 
     public function order(): void
     {
-
         if (!$this->authService->check()) {
             header("Location: /login");
             exit();
@@ -64,15 +66,7 @@ class OrderController
 
             $orderId = $this->modelOrder->create($userId, $email, $phone, $fullName, $address, $city, $country, $postalCode);
 
-            $userProducts = $this->modelUserProduct->getAllByUserId($userId);
-
-            foreach ($userProducts as $userProduct) {
-                $productId = $userProduct->getProductId();
-                $quantity = $userProduct->getQuantity();
-                $this->modelOrderProduct->create($orderId, $productId, $quantity);
-            }
-
-            $this->modelUserProduct->deleteByUserId($userId);
+            $this->orderService->order($userId, $orderId);
             $this->getOrderForm();
         }
          $this->getOrderForm();
@@ -115,7 +109,7 @@ class OrderController
         require_once './../Views/userOrders.php';
     }
 
-    public function orderValidate(array $data): array
+    private function orderValidate(array $data): array
     {
         $errors = [];
 

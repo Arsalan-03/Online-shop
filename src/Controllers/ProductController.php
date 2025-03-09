@@ -2,20 +2,26 @@
 namespace Controllers;
 
 use Models\Product;
+use Models\Review;
 use Models\UserProduct;
 use Service\AuthService;
+use Service\ProductService;
 
 class ProductController
 {
     private Product $modelProduct;
     private UserProduct $modelUserProduct;
+    private Review $modelReview;
     private AuthService $authService;
+    private ProductService $productService;
 
     public function __construct()
     {
         $this->modelProduct = new Product();
         $this->modelUserProduct = new UserProduct();
         $this->authService = new AuthService();
+        $this->modelReview = new Review();
+        $this->productService = new ProductService();
     }
 
     public function getCatalog(): void
@@ -41,14 +47,9 @@ class ProductController
             $productId = $_POST['product_id'];
             $quantity = $_POST['quantity'];
 
-
-            // Проверяем, есть ли продукт в таблице
-            $result = $this->modelUserProduct->getOneByUserIdByProductId($userId, $productId); // Проверяем продукт по userId и ProductId
-
-            if ($result === false) {
-                $this->modelUserProduct->add($userId, $productId, $quantity); // Добавляем новый товар в корзину
-            } else {
-                $this->modelUserProduct->updateQuantityPlus($productId, $quantity, $userId); // Обновляем количество товара
+            $result = $this->productService->addProduct($userId, $productId, $quantity);
+            if ($result === true)
+            {
                 header("Location: /order");
                 exit();
             }
@@ -56,12 +57,99 @@ class ProductController
         header("Location: /main");
     }
 
-    private function addProductValidate(array $date): array
+    public function deleteProduct(): void
+    {
+        $errors = $this->addProductValidate($_POST);
+        if (empty($errors)) {
+            $user = $this->authService->getCurrentUser();
+            $userId = $user->getId();
+            $productId = $_POST['product_id'];
+            $quantity = $_POST['quantity'];
+
+            $result = $this->productService->deleteProduct($userId, $productId, $quantity);
+            if ($result === false) {
+                $errors[] = 'Добавьте товар в корзину';
+            } else {
+                header("Location: /order");
+                exit();
+            }
+        }
+    }
+
+    public function getOneProductForm(): void
+    {
+        if (!$this->authService->check()) {
+            header("Location: /login");
+            exit();
+        }
+
+        $productId = $_POST['product_id'];
+        $products = $this->modelProduct->getOneById($productId);
+        $reviews = $this->modelReview->getById($productId);
+
+        require_once './../Views/product.php';
+    }
+
+    public function addReviews(): void
+    {
+        $errors = $this->reviewValidate($_POST);
+        if (empty($errors)) {
+            $user = $this->authService->getCurrentUser();
+            $userId = $user->getId();
+            $productId = $_POST['product_id'];
+            $rating = $_POST['rating'];
+            $author = $_POST['author'];
+            $reviewText = $_POST['review-text'];
+
+            $this->modelReview->add($userId, $productId, $rating, $author, $reviewText);
+        }
+
+        $this->getOneProductForm();
+        require_once './../Views/product.php';
+    }
+
+    private function reviewValidate(array $data): array
+    {
+        $errors = [];
+        //Валидация Оценки
+        if (isset($data['rating'])) {
+            $rating = (int)$data['rating'];
+
+            if ($rating < 0 || $rating > 5) {
+                $errors['rating'] = 'Отзыв не может быть меньше 0 и больше 5';
+            }
+        } else{
+            $errors['rating'] = 'Заполните поле Оценка';
+        }
+
+        //Валидация автора
+        if (isset($data['author'])) {
+            $author = $data['author'];
+            if (strlen($author) < 2 || strlen($author) > 50) {
+                $errors['name'] = "Недопустимое количество букв в поле Name";
+            }
+        } else {
+            $errors['author'] = 'Заполните поле Автор';
+        }
+
+        //Валидация Отзыва-текст
+        if (isset($data['review-text'])) {
+            $reviewText = $data['review-text'];
+            if (strlen($reviewText) < 2 || strlen($reviewText) > 255) {
+                $errors['review-text'] = 'Недопустимое количество букв в поле Ваш Отзыв';
+            }
+        } else {
+            $errors['review-text'] = 'Заполните поле Ваш Отзыв';
+        }
+        return $errors;
+    }
+
+    private function addProductValidate(array $data): array
     {
         $errors = [];
         //Валидация товара
-        if (isset($date['product_id'])) {
-            $productId = (int)$date['product_id'];
+        if (isset($data['product_id'])) {
+            $productId = (int)$data['product_id'];
 
             $result = $this->modelProduct->getOneById($productId);
 
@@ -73,8 +161,8 @@ class ProductController
         }
 
         //Валидация количества
-        if (isset($date['quantity'])) {
-            $quantity = $date['quantity'];
+        if (isset($data['quantity'])) {
+            $quantity = (int)$data['quantity'];
 
             // Проверка, является ли quantity числом
             if (!is_numeric($quantity)) {
@@ -90,27 +178,15 @@ class ProductController
         return $errors;
     }
 
-    public function deleteProduct(): void
+    private function newReviews($products): array
     {
-        $errors = $this->addProductValidate($_POST);
-        if (empty($errors)) {
+        $newProduct = [];
+        $productId = $_POST['product_id'];
 
+            $review = $this->modelReview->getById($productId);
+            $products->setReview($review);
+            $newProduct[] = $products;
 
-            $user = $this->authService->getCurrentUser();
-            $userId = $user->getId();
-            $productId = $_POST['product_id'];
-            $quantity = $_POST['quantity'];
-
-            // Проверяем, есть ли продукт в таблице
-            $result = $this->modelUserProduct->getOneByUserIdByProductId($userId, $productId); // Проверяем продукт по userId и ProductId
-
-            if ($result === false) {
-                $errors[] = 'Добавьте товар в корзину';
-            } else {
-                $this->modelUserProduct->updateQuantityMinus($productId, $quantity, $userId);
-                header("Location: /order");
-                exit();
-            }
-        }
+        return $newProduct;
     }
 }

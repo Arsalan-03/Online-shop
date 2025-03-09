@@ -37,11 +37,17 @@
             <!-- Верхняя часть -->
             <div class="card__top">
                 <!-- Изображение-ссылка товара -->
-                <a href="#" class="card__image">
-                    <img
-                            src="<?php echo $product->getImage(); ?>"
-                            alt="Apple IPhone 14 PRO Max Gold"
-                    />
+                <form action="/open-product" method="post">
+                    <a class="card__image"> <input type="hidden" name="product_id" value="<?php echo $product->getId(); ?>">
+
+                        <button class="product-button">
+                            <img
+                                    src="<?php echo $product->getImage(); ?>"
+                                    alt="Apple IPhone 14 PRO Max Gold"
+                                    class="product-image"
+                            />
+                        </button>
+                </form>
                 </a>
                 <!-- Скидка на товар -->
                 <div class="card__label">-10%</div>
@@ -172,21 +178,6 @@
          transition: 0.2s;
      }
 
-     .card-header {
-         font-size: 13px;
-         color: gray;
-         background-color: white;
-     }
-
-     .text-muted {
-         font-size: 11px;
-     }
-
-     .card-footer{
-         font-weight: bold;
-         font-size: 18px;
-         background-color: white;
-     }
 
      .card {
          width: 225px;
@@ -350,4 +341,18 @@
          column-gap: 30px;
          row-gap: 40px;
      }
+     .product-button {
+         background-color: transparent; /* Задать прозрачный фон для кнопки */
+         border: none; /* Удалить границы кнопки */
+         cursor: pointer; /* Изменить указатель при наведении */
+         padding: 0; /* Удалить внутренние отступы */
+     }
+
+     .product-image {
+         max-width: 100%; /* Ограничить ширину до 100% от контейнера */
+         height: auto; /* Автоматическая высота для сохранения пропорций */
+         border-radius: 8px; /* Округление углов изображения (по желанию) */
+         display: block; /* Сделать изображение блочным элементом */
+     }
+
 </style>

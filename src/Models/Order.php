@@ -13,11 +13,15 @@ class Order extends Model
     private string $country;
     private int $postal;
 
+    protected function getTableName(): string
+    {
+        return 'orders';
+    }
 
     public function create(int $userId, string $email, string $name, string $phone, string $address, string $city, string $country, int $postal)
     {
         $statement = $this->getPdo()->prepare(
-            "INSERT INTO orders (user_id, email, phone, name, address, city, country, postal) 
+            "INSERT INTO {$this->getTableName()} (user_id, email, phone, name, address, city, country, postal) 
                     VALUES (:user_id, :email, :phone, :name, :address, :city, :country, :postal) RETURNING id"
         );
         $statement->execute([
@@ -38,7 +42,7 @@ class Order extends Model
     public function getAllByUserId(int $userId): array
     {
         $statement = $this->getPdo()->prepare(
-            "SELECT * FROM orders WHERE user_id = :user_id");
+            "SELECT * FROM {$this->getTableName()} WHERE user_id = :user_id");
         $statement->execute(['user_id' => $userId]);
         $results = $statement->fetchAll();
 
@@ -52,7 +56,7 @@ class Order extends Model
 
     public function getByIdAndUserId(int $orderId, int $userId): Order|false
     {
-        $statement = $this->getPdo()->prepare("SELECT * FROM orders WHERE id = :orderId AND user_id = :userId");
+        $statement = $this->getPdo()->prepare("SELECT * FROM {$this->getTableName()} WHERE id = :orderId AND user_id = :userId");
         $statement->execute(['orderId' => $orderId, 'userId' => $userId]);
         $result = $statement->fetch();
 

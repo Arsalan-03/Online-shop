@@ -7,10 +7,15 @@ class User extends Model
     public string $email;
     public string $password;
 
+    protected function getTableName(): string
+    {
+        return 'users';
+    }
+
     public function create($name, $email, $password): void
     {
         $statement = $this->getPdo()->prepare(
-            "INSERT INTO users(name, email, password) VALUES(:name, :email, :password)"
+            "INSERT INTO {$this->getTableName()}(name, email, password) VALUES(:name, :email, :password)"
         );
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $statement->execute([
@@ -22,7 +27,7 @@ class User extends Model
 
     public function getByEmail(string $email): self|false
     {
-        $stmt = $this->getPdo()->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt = $this->getPdo()->prepare("SELECT * FROM {$this->getTableName()} WHERE email = :email");
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch();
         if ($user){
@@ -31,18 +36,9 @@ class User extends Model
         return false;
     }
 
-//    public function getByEmailByRegistration(string $email): self|null
-//    {
-//        $stmt = $this->getPdo()->prepare("SELECT * FROM users WHERE email = :email");
-//        $stmt->execute(['email' => $email]);
-//        $user = $stmt->fetchAll();
-//
-//        return $this->hydrate($user);
-//    }
-
     public function getById(int $userId): self|null
     {
-        $statement = $this->getPdo()->prepare("SELECT * FROM users WHERE id = :user_id");
+        $statement = $this->getPdo()->prepare("SELECT * FROM {$this->getTableName()} WHERE id = :user_id");
         $statement->execute(['user_id' => $userId]);
         $user = $statement->fetch();
 
@@ -52,7 +48,7 @@ class User extends Model
     public function update($name, $email, $password, $userId): void
     {
         $stmt = $this->getPdo()->prepare(
-            "UPDATE users SET name = :name, email = :email, password = :password WHERE id = :user_id"
+            "UPDATE {$this->getTableName()} SET name = :name, email = :email, password = :password WHERE id = :user_id"
         );
         $hashPassword = password_hash($password, PASSWORD_DEFAULT);
         $stmt->execute([

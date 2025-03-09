@@ -10,10 +10,15 @@ class OrderProduct extends Model
     private int $quantity;
     private Product $product;
 
+   protected function getTableName(): string
+   {
+       return 'order_products';
+   }
+
     public function create(int $orderId, int $productId, int $quantity): void
     {
        $stmt = $this->getPdo()->prepare(
-            "INSERT INTO order_products(order_id, product_id, quantity) VALUES(:order_id, :product_id, :quantity)"
+            "INSERT INTO {$this->getTableName()}(order_id, product_id, quantity) VALUES(:order_id, :product_id, :quantity)"
         );
 
        $stmt->execute(['order_id' => $orderId, 'product_id' => $productId, 'quantity' => $quantity]);
@@ -21,7 +26,7 @@ class OrderProduct extends Model
 
     public function getAllByOrderId(int $orderId): array
     {
-        $stmt = $this->getPdo()->prepare("SELECT * FROM order_products WHERE order_id = :orderId");
+        $stmt = $this->getPdo()->prepare("SELECT * FROM {$this->getTableName()} WHERE order_id = :orderId");
         $stmt->execute(['orderId' => $orderId]);
         $orderProducts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 

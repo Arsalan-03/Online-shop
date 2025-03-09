@@ -7,11 +7,17 @@ class Product extends Model
     public string $name;
     public string $description;
     public int $price;
+    public Review $review;
+
+    protected function getTableName(): string
+    {
+        return 'products';
+    }
 
     public function getAll(): array
     {
         $statement = $this->getPdo()->query(
-            "SELECT * FROM products"
+            "SELECT * FROM {$this->getTableName()}"
         );
         $products = $statement->fetchAll();
 
@@ -26,7 +32,7 @@ class Product extends Model
     public function getOneById(int $productId): self|null
     {
         $stmt = $this->getPdo()->prepare("
-            SELECT * FROM products WHERE id = :product_id"
+            SELECT * FROM {$this->getTableName()} WHERE id = :product_id"
         );
         $stmt->execute(['product_id' => $productId]);
         $products = $stmt->fetch();
@@ -37,7 +43,7 @@ class Product extends Model
     public function deleteProductByUserId(int $userId): void
     {
         $stmt = $this->getPdo()->prepare(
-            "DELETE FROM products WHERE id = :user_id"
+            "DELETE FROM {$this->getTableName()} WHERE id = :user_id"
         );
         $stmt->execute(['user_id' => $userId]);
     }
@@ -82,6 +88,16 @@ class Product extends Model
     public function getPrice(): int
     {
         return $this->price;
+    }
+
+    public function getReview(): Review
+    {
+        return $this->review;
+    }
+
+    public function setReview(Review $review): void
+    {
+        $this->review = $review;
     }
 
 }

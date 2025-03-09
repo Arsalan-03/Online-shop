@@ -7,7 +7,7 @@ class TestController
 
     public function getTestForm()
     {
-        require_once '../Views/test.php';
+        require_once '../Views/product.php';
     }
 
 }

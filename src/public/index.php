@@ -24,6 +24,8 @@ $app->get('/cart', CartController::class, 'getCartForm');
 $app->get('/order', OrderController::class, 'getOrderForm');
 $app->get('/myOrders', OrderController::class, 'getAllOrders');
 
+$app->post('/reviews', ProductController::class, 'addReviews');
+$app->post('/open-product', ProductController::class, 'getOneProductForm');
 $app->post('/userOrders',OrderController::class, 'getUserOrders');
 $app->post('/registration', UserController::class, 'registrate');
 $app->post('/login', UserController::class, 'login');
