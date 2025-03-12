@@ -2,6 +2,8 @@
 
 namespace Service;
 
+use DTO\ProductCreateDTO;
+use Models\User;
 use Models\UserProduct;
 
 class ProductService
@@ -12,27 +14,27 @@ class ProductService
         $this->modelUserProduct = new UserProduct();
     }
 
-    public function addProduct(int $userId, int $productId, int $quantity): bool
+    public function addProduct(ProductCreateDTO $data): bool
     {
-        $result = $this->modelUserProduct->getOneByUserIdByProductId($userId, $productId); // Проверяем продукт по userId и ProductId
+        $result = $this->modelUserProduct->getOneByUserIdByProductId($data->getUser()->getId(), $data->getProductId()); // Проверяем продукт по userId и ProductId
 
         if ($result === false) {
-            $this->modelUserProduct->add($userId, $productId, $quantity); // Добавляем новый товар в корзину
+            $this->modelUserProduct->add($data->getUser()->getId(), $data->getProductId(), $data->getQuantity()); // Добавляем новый товар в корзину
         } else {
-            $this->modelUserProduct->updateQuantityPlus($productId, $quantity, $userId); // Обновляем количество товара
+            $this->modelUserProduct->updateQuantityPlus($data->getProductId(), $data->getQuantity(), $data->getUser()->getId()); // Обновляем количество товара
             return true;
         }
         return false;
     }
 
-    public function deleteProduct(int $userId, int $productId, int $quantity): bool
+    public function deleteProduct(ProductCreateDTO $data): bool
     {
-        $result = $this->modelUserProduct->getOneByUserIdByProductId($userId, $productId); // Проверяем продукт по userId и ProductId
+        $result = $this->modelUserProduct->getOneByUserIdByProductId($data->getUser()->getId(), $data->getProductId()); // Проверяем продукт по userId и ProductId
 
         if ($result === false) {
             return false;
         } else {
-            $this->modelUserProduct->updateQuantityMinus($productId, $quantity, $userId);
+            $this->modelUserProduct->updateQuantityMinus($data->getProductId(), $data->getQuantity(), $data->getUser()->getId());
             return true;
         }
     }

@@ -1,6 +1,8 @@
 <?php
 namespace Core;
 
+use Request\Request;
+
 class App
 {
     private array $routes = [];
@@ -17,9 +19,16 @@ class App
 
                 $class = $handler['class'];
                 $method = $handler['method'];
-
                 $controller = new $class();
-                $controller->$method();
+
+                $requestClass = $handler['request'];
+
+                if ($requestClass !== null) {
+                    $request = new $requestClass($_POST);
+                    $controller->$method($request);
+                } else {
+                    $controller->$method();
+                }
             } else {
                 echo "$requestMethod не поддерживается адресом $requestUri";
             }
@@ -30,35 +39,39 @@ class App
         }
     }
 
-    public function get(string $route, string $className, string $method): void
+    public function get(string $route, string $className, string $method, string $requestClass = null): void
     {
         $this->routes[$route]['GET'] = [
             'class' => $className,
-            'method' => $method
+            'method' => $method,
+            'request' => $requestClass,
         ];
     }
 
-    public function post(string $route, string $className, string $method): void
+    public function post(string $route, string $className, string $method, string $requestClass = null): void
     {
         $this->routes[$route]['POST'] = [
             'class' => $className,
-            'method' => $method
+            'method' => $method,
+            'request' => $requestClass,
         ];
     }
 
-    public function put(string $route, string $className, string $method): void
+    public function put(string $route, string $className, string $method, string $requestClass = null): void
     {
         $this->routes[$route]['PUT'] = [
             'class' => $className,
-            'method' => $method
+            'method' => $method,
+            'request' => $requestClass,
         ];
     }
 
-    public function DELETE(string $route, string $className, string $method): void
+    public function delete(string $route, string $className, string $method, string $requestClass = null): void
     {
         $this->routes[$route]['DELETE'] = [
             'class' => $className,
-            'method' => $method
+            'method' => $method,
+            'request' => $requestClass,
         ];
     }
 }

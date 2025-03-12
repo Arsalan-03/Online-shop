@@ -1,9 +1,11 @@
 <?php
 namespace Controllers;
+use DTO\OrderCreateDTO;
 use Models\Order;
 use Models\OrderProduct;
 use Models\Product;
 use Models\UserProduct;
+use Request\OrderRequest;
 use Service\AuthService;
 use Service\OrderService;
 
@@ -43,33 +45,27 @@ class OrderController
         exit();
     }
 
-
-    public function order(): void
+    public function getUserOrders(array $data): void
     {
         if (!$this->authService->check()) {
             header("Location: /login");
             exit();
         }
+        $user = $this->authService->getCurrentUser();
+        $userId = $user->getId();
+        $orderId = $data['id'];
 
-        $errors = $this->orderValidate($_POST);
+        $userOrders = $this->modelOrder->getByIdAndUserId($orderId, $userId);
 
-        if (empty($errors)) {
-            $user = $this->authService->getCurrentUser();
-            $userId = $user->getId();
-            $email = $_POST['email'];
-            $phone = $_POST['phone'];
-            $fullName = $_POST['name'];
-            $address = $_POST['address'];
-            $city = $_POST['city'];
-            $country = $_POST['country'];
-            $postalCode = $_POST['postalCode'];
-
-            $orderId = $this->modelOrder->create($userId, $email, $phone, $fullName, $address, $city, $country, $postalCode);
-
-            $this->orderService->order($userId, $orderId);
-            $this->getOrderForm();
+        $orderProducts = $this->modelOrderProduct->getAllByOrderId($orderId);
+        if (empty($orderProducts)) {
+            header("Location: /login");
+            exit();
         }
-         $this->getOrderForm();
+
+        $newOrderProducts = $this->newOrderProducts($orderProducts);
+
+        require_once './../Views/userOrders.php';
     }
 
     public function getAllOrders(): void
@@ -86,92 +82,31 @@ class OrderController
         require_once './../Views/myOrders.php';
     }
 
-    public function getUserOrders(): void
+
+    public function order(OrderRequest $request): void
     {
-        if (!$this->authService->check()) {
-            header("Location: /login");
-            exit();
+        $errors = $request->validate();
+
+        if (empty($errors)) {
+            if ($user = $this->authService->getCurrentUser()){
+                $dto = new OrderCreateDTO(
+                    $request->getEmail(),
+                    $request->getPhone(),
+                    $request->getName(),
+                    $request->getAddress(),
+                    $request->getCity(),
+                    $request->getCountry(),
+                    $request->getPostal(),
+                    $user);
+
+                $this->orderService->order($dto);
+                $this->getOrderForm();
+            } else {
+                header("Location: /login");
+                exit();
+            }
         }
-        $user = $this->authService->getCurrentUser();
-        $userId = $user->getId();
-        $orderId = $_POST['id'];
-
-        $userOrders = $this->modelOrder->getByIdAndUserId($orderId, $userId);
-
-        $orderProducts = $this->modelOrderProduct->getAllByOrderId($orderId);
-        if (empty($orderProducts)) {
-            header("Location: /login");
-            exit();
-        }
-
-        $newOrderProducts = $this->newOrderProducts($orderProducts);
-
-        require_once './../Views/userOrders.php';
-    }
-
-    private function orderValidate(array $data): array
-    {
-        $errors = [];
-
-        // Валидация email
-        if (isset($data['email'])) {
-            $email = $data['email'];
-        } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'Неправильный формат email.';
-        } else {
-            $errors['email'] = 'Email является обязательным полем.';
-
-        }
-
-        // Валидация телефона
-        if (isset($data['phone'])) {
-            $phone = $data['phone'];
-        } elseif (!preg_match('/^\+?[0-9]{10,15}$/', $data['phone'])) {
-            $errors['phone'] = 'Неправильный формат телефона. Убедитесь, что номер состоит из 10-15 цифр, возможно, с начальным знаком "плюс".';
-        } else {
-            $errors['phone'] = 'Телефон является обязательным полем.';
-        }
-
-        // Валидация полного имени
-        if (isset($data['name'])) {
-            $fullName = $data['name'];
-        } elseif (strlen($data['name']) < 3) {
-            $errors['name'] = 'Полное имя должно содержать как минимум 3 символа.';
-        } else {
-            $errors['name'] = 'Полное имя является обязательным полем.';
-        }
-
-        // Валидация адреса
-        if (isset($data['address'])) {
-            $address = $data['address'];
-        } else {
-            $errors['address'] = 'Адрес является обязательным полем.';
-        }
-
-        // Валидация города
-        if (isset($data['city'])) {
-            $city = $data['city'];
-        } else {
-            $errors['city'] = 'Город является обязательным полем.';
-        }
-
-        // Валидация страны
-        if (isset($data['country'])) {
-            $country = $data['country'];
-        } else {
-            $errors['country'] = 'Страна является обязательным полем.';
-        }
-
-        // Валидация почтового индекса
-        if (isset($data['postalCode'])) {
-            $postalCode = $data['postalCode'];
-        } elseif (!preg_match('/^[0-9]{5,10}$/', $data['postalCode'])) {
-            $errors['postalCode'] = 'Неправильный формат почтового индекса. Убедитесь, что он состоит из 5-10 цифр.';
-        } else {
-            $errors['postalCode'] = 'Почтовый индекс является обязательным полем.';
-        }
-
-        return $errors;
+         $this->getOrderForm();
     }
 
     private function newOrderProducts(array $userProducts): array

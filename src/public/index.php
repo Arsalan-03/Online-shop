@@ -3,10 +3,10 @@
 use Controllers\CartController;
 use Controllers\OrderController;
 use Controllers\ProductController;
-use Controllers\TestController;
 use Controllers\UserController;
 use Core\App;
 use Core\Autoloader;
+
 
 require_once './../Core/Autoloader.php';
 
@@ -18,21 +18,21 @@ $app = new App();
 $app->get('/registration',  UserController::class, 'getRegistrationForm');
 $app->get('/login',  UserController::class, 'getLoginForm');
 $app->get('/main', ProductController::class, 'getCatalog');
-$app->get('/my_profile', UserController::class, 'myProfile');
+$app->get('/my_profile', UserController::class, 'myProfileForm');
 $app->get('/edit_profile',UserController::class, 'getEditProfileForm');
 $app->get('/cart', CartController::class, 'getCartForm');
 $app->get('/order', OrderController::class, 'getOrderForm');
 $app->get('/myOrders', OrderController::class, 'getAllOrders');
 
-$app->post('/reviews', ProductController::class, 'addReviews');
+$app->post('/reviews', ProductController::class, 'addReviews', \Request\ReviewRequest::class);
 $app->post('/open-product', ProductController::class, 'getOneProductForm');
 $app->post('/userOrders',OrderController::class, 'getUserOrders');
-$app->post('/registration', UserController::class, 'registrate');
-$app->post('/login', UserController::class, 'login');
+$app->post('/registration', UserController::class, 'registrate', \Request\RegistrationRequest::class);
+$app->post('/login', UserController::class, 'login', \Request\LoginRequest::class);
 $app->post('/edit_profile', UserController::class, 'editProfile');
-$app->post('/addProduct', ProductController::class, 'addProduct');
-$app->post('/deleteProduct', ProductController::class, 'deleteProduct');
+$app->post('/addProduct', ProductController::class, 'addProduct', \Request\AddProductRequest::class);
+$app->post('/deleteProduct', ProductController::class, 'deleteProduct', \Request\DeleteProductRequest::class);
 $app->post('/logout', UserController::class, 'logout');
-$app->post('/order',OrderController::class, 'order');
+$app->post('/order',OrderController::class, 'order', \Request\OrderRequest::class);
 
 $app->run();
