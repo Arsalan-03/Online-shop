@@ -13,15 +13,16 @@ class Order extends Model
     private string $country;
     private int $postal;
 
-    protected function getTableName(): string
+    protected static function getTableName(): string
     {
         return 'orders';
     }
 
-    public function create(string $email, string $name, string $phone, string $address, string $city, string $country, int $postal, int $user)
+    public static function create(string $email, string $name, string $phone, string $address, string $city, string $country, int $postal, int $user)
     {
-        $statement = $this->getPdo()->prepare(
-            "INSERT INTO {$this->getTableName()} (user_id, email, phone, name, address, city, country, postal) 
+        $tableName = static::getTableName();
+        $statement = static::getPdo()->prepare(
+            "INSERT INTO $tableName (user_id, email, phone, name, address, city, country, postal) 
                     VALUES (:user_id, :email, :phone, :name, :address, :city, :country, :postal) RETURNING id"
         );
         $statement->execute([
@@ -39,34 +40,36 @@ class Order extends Model
        return $data['id'];
     }
 
-    public function getAllByUserId(int $userId): array
+    public static function getAllByUserId(int $userId): array
     {
-        $statement = $this->getPdo()->prepare(
-            "SELECT * FROM {$this->getTableName()} WHERE user_id = :user_id");
+        $tableName = static::getTableName();
+        $statement = static::getPdo()->prepare(
+            "SELECT * FROM $tableName WHERE user_id = :user_id");
         $statement->execute(['user_id' => $userId]);
         $results = $statement->fetchAll();
 
         $allOrders = [];
         foreach ($results as $result) {
-            $allOrders[] = $this->hydrate($result);
+            $allOrders[] = static::hydrate($result);
         }
 
         return $allOrders;
     }
 
-    public function getByIdAndUserId(int $orderId, int $userId): Order|false
+    public static function getByIdAndUserId(int $orderId, int $userId): Order|false
     {
-        $statement = $this->getPdo()->prepare("SELECT * FROM {$this->getTableName()} WHERE id = :orderId AND user_id = :userId");
+        $tableName = static::getTableName();
+        $statement = static::getPdo()->prepare("SELECT * FROM $tableName WHERE id = :orderId AND user_id = :userId");
         $statement->execute(['orderId' => $orderId, 'userId' => $userId]);
         $result = $statement->fetch();
 
         if (!$result) {
             return false;
         }
-        return $this->hydrate($result);
+        return static::hydrate($result);
     }
 
-    private function hydrate(array $data): self|null
+    private static function hydrate(array $data): self|null
     {
         if (!$data)
         {

@@ -2,9 +2,16 @@
 
 namespace Controllers;
 
-use Models\User;
+use Service\Auth\AuthInterface;
+use Service\Auth\AuthSessionService;
 
-class BaseController
+abstract class BaseController
 {
+    protected AuthInterface $authInterface;
+    public function __construct()
+    {
+        $this->authInterface = new AuthSessionService();
+    }
+
 
 }

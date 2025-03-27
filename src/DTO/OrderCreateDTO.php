@@ -14,7 +14,6 @@ class OrderCreateDTO
         private string        $city,
         private string        $country,
         private int           $postal,
-        private readonly User $user,
     ){
     }
 
@@ -51,10 +50,5 @@ class OrderCreateDTO
     public function getPostal(): int
     {
         return $this->postal;
-    }
-
-    public function getUser(): User
-    {
-        return $this->user;
     }
 }

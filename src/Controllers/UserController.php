@@ -6,17 +6,14 @@ use Models\User;
 use Request\EditProfileRequest;
 use Request\LoginRequest;
 use Request\RegistrationRequest;
-use Service\AuthService;
 
-class UserController
+class UserController extends BaseController
 {
     private User $modelUser;
-    private AuthService $authService;
-
     public function __construct()
     {
+        parent::__construct();
         $this->modelUser = new User();
-        $this->authService = new AuthService();
     }
 
     public function getRegistrationForm(): void
@@ -31,18 +28,18 @@ class UserController
 
     public function myProfileForm(): void
     {
-        if (!$this->authService->check()) {
+        if (!$this->authInterface->check()) {
             header("Location: /login");
             exit();
         }
-        $user = $this->authService->getCurrentUser(); //проверяем пользователя по ID
+        $user = $this->authInterface->getCurrentUser(); //проверяем пользователя по ID
         require_once '../Views/my_profile.php';
     }
 
     public function getEditProfileForm(): void
     {
 
-        if (!$this->authService->check()) {
+        if (!$this->authInterface->check()) {
             header("Location: /login");
             exit();
         }
@@ -68,7 +65,7 @@ class UserController
         $errors = $request->validate();
 
         if (empty($errors)) {
-            $result = $this->authService->auth($request->getEmail(), $request->getPassword());
+            $result = $this->authInterface->auth($request->getEmail(), $request->getPassword());
 
             if ($result === true) {
                 header("Location: /main");
@@ -86,7 +83,7 @@ class UserController
         $errors = $request->validate();
 
         if (empty($errors)) {
-            $user = $this->authService->getCurrentUser();
+            $user = $this->authInterface->getCurrentUser();
             $userId = $user->getId();
 
             $result = $this->modelUser->getByEmail($request->getEmail()); // Проверяем пользователя по email
@@ -101,7 +98,7 @@ class UserController
 
     public function logout(): void
     {
-        $this->authService->logout();
+        $this->authInterface->logout();
         header("Location: /login");
         exit();
     }

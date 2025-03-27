@@ -2,52 +2,27 @@
 namespace Controllers;
 use Models\Product;
 use Models\UserProduct;
-use Service\AuthService;
+use Service\Auth\AuthSessionService;
 
-class CartController
+class CartController extends BaseController
 {
-    private Product $modelProduct;
-    private UserProduct $modelUserProduct;
-    private AuthService $authService;
-
-    public function __construct()
-    {
-        $this->modelProduct = new Product();
-        $this->modelUserProduct = new UserProduct();
-        $this->authService = new AuthService();
-    }
-
     public function getCartForm(): void
     {
-        if (!$this->authService->check()) {
+        if (!$this->authInterface->check()) {
             header("Location: /login");
         }
 
-        $user = $this->authService->getCurrentUser();
+        $user = $this->authInterface->getCurrentUser();
         $userId = $user->getId();
 
-        $userProducts = $this->modelUserProduct->getAllByUserId($userId); //Достаем идентификаторы продукта, который добавил текущий пользователь
+        $cartProducts = UserProduct::getAllByUserId($userId);
 
-        $cartProducts = [];
-        if (empty($userProducts)) {
+        if (empty($cartProducts)) {
             header("Location: /main");
             exit();
         }
 
-        $cartProducts = $this->newCartProducts($userProducts);
         require_once './../Views/cart.php';
-    }
-
-    private function newCartProducts(array $userProducts): array
-    {
-        $newCartProducts = [];
-
-        foreach ($userProducts as $userProduct) {
-            $product = $this->modelProduct->getOneById($userProduct->getProductId());
-            $userProduct->setProduct($product);
-            $newCartProducts[] = $userProduct;
-        }
-        return $newCartProducts;
     }
 
 }

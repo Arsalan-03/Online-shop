@@ -7,20 +7,18 @@ use Models\Review;
 use Request\AddProductRequest;
 use Request\DeleteProductRequest;
 use Request\ReviewRequest;
-use Service\AuthService;
 use Service\ProductService;
 
-class ProductController
+class ProductController extends BaseController
 {
     private Product $modelProduct;
     private Review $modelReview;
-    private AuthService $authService;
     private ProductService $productService;
 
     public function __construct()
     {
+        parent::__construct();
         $this->modelProduct = new Product();
-        $this->authService = new AuthService();
         $this->modelReview = new Review();
         $this->productService = new ProductService();
     }
@@ -28,7 +26,7 @@ class ProductController
     public function getCatalog(): void
     {
 
-        if (!$this->authService->check()) {
+        if (!$this->authInterface->check()) {
             header("Location: /login");
         }
 
@@ -40,7 +38,7 @@ class ProductController
 
     public function getOneProductForm(): void
     {
-        if (!$this->authService->check()) {
+        if (!$this->authInterface->check()) {
             header("Location: /login");
             exit();
         }
@@ -56,7 +54,7 @@ class ProductController
     {
         $errors = $request->validate();
         if (empty($errors)) {
-            $user = $this->authService->getCurrentUser();
+            $user = $this->authInterface->getCurrentUser();
             $dto = new ProductCreateDTO(
                 $request->getProductId(),
                 $user,
@@ -77,7 +75,7 @@ class ProductController
     {
         $errors = $request->validate();
         if (empty($errors)) {
-            $user = $this->authService->getCurrentUser();
+            $user = $this->authInterface->getCurrentUser();
 
             $dto = new ProductCreateDTO(
                 $request->getProductId(),
@@ -98,7 +96,7 @@ class ProductController
     {
         $errors = $request->validate();
         if (empty($errors)) {
-            $user = $this->authService->getCurrentUser();
+            $user = $this->authInterface->getCurrentUser();
             $userId = $user->getId();
 
             $this->modelReview->add($userId, $request->getProductId(), $request->getRating(), $request->getAuthor(), $request->getReviewText());

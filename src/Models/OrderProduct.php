@@ -10,35 +10,49 @@ class OrderProduct extends Model
     private int $quantity;
     private Product $product;
 
-   protected function getTableName(): string
+   protected static function getTableName(): string
    {
        return 'order_products';
    }
 
-    public function create(int $orderId, int $productId, int $quantity): void
+    public static function create(int $orderId, int $productId, int $quantity): void
     {
-       $stmt = $this->getPdo()->prepare(
-            "INSERT INTO {$this->getTableName()}(order_id, product_id, quantity) VALUES(:order_id, :product_id, :quantity)"
+        $tableName = static::getTableName();
+       $stmt = static::getPdo()->prepare(
+            "INSERT INTO $tableName (order_id, product_id, quantity) VALUES(:order_id, :product_id, :quantity)"
         );
 
        $stmt->execute(['order_id' => $orderId, 'product_id' => $productId, 'quantity' => $quantity]);
     }
 
-    public function getAllByOrderId(int $orderId): array
+    public static function getAllByOrderId(int $orderId): array
     {
-        $stmt = $this->getPdo()->prepare("SELECT * FROM {$this->getTableName()} WHERE order_id = :orderId");
+        $tableName = static::getTableName();
+        $stmt = static::getPdo()->prepare("SELECT * FROM $tableName op inner join products p on op.product_id = p.id WHERE order_id = :orderId");
         $stmt->execute(['orderId' => $orderId]);
         $orderProducts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         $newOrderProducts = [];
         foreach ($orderProducts as $orderProduct) {
-            $newOrderProducts[] = $this->hydrate($orderProduct);
+            $newOrderProducts[] = static::hydrateWithProduct($orderProduct);
         }
 
         return $newOrderProducts;
     }
 
-    private function hydrate(array $data): self|null
+    private static function hydrateWithProduct($data): self|false
+    {
+        if (!$data) {
+            return false;
+        }
+
+        $obj = static::hydrate($data);
+        $product = Product::hydrate($data);
+        $obj->setProduct($product);
+        return $obj;
+    }
+
+    private static function hydrate(array $data): self|null
     {
         if (!$data)
         {

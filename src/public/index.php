@@ -29,7 +29,7 @@ $app->post('/open-product', ProductController::class, 'getOneProductForm');
 $app->post('/userOrders',OrderController::class, 'getUserOrders');
 $app->post('/registration', UserController::class, 'registrate', \Request\RegistrationRequest::class);
 $app->post('/login', UserController::class, 'login', \Request\LoginRequest::class);
-$app->post('/edit_profile', UserController::class, 'editProfile');
+$app->post('/edit_profile', UserController::class, 'editProfile', \Request\EditProfileRequest::class);
 $app->post('/addProduct', ProductController::class, 'addProduct', \Request\AddProductRequest::class);
 $app->post('/deleteProduct', ProductController::class, 'deleteProduct', \Request\DeleteProductRequest::class);
 $app->post('/logout', UserController::class, 'logout');

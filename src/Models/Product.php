@@ -9,46 +9,49 @@ class Product extends Model
     public int $price;
     public Review $review;
 
-    protected function getTableName(): string
+    protected static function getTableName(): string
     {
         return 'products';
     }
 
-    public function getAll(): array
+    public static function getAll(): array
     {
-        $statement = $this->getPdo()->query(
-            "SELECT * FROM {$this->getTableName()}"
+        $tableName = self::getTableName();
+        $statement = static::getPdo()->query(
+            "SELECT * FROM $tableName"
         );
         $products = $statement->fetchAll();
 
         $newProducts = [];
         foreach ($products as $product) {
-            $newProducts[] = $this->hydrate($product);
+            $newProducts[] = static::hydrate($product);
         }
 
         return $newProducts;
     }
 
-    public function getOneById(int $productId): self|null
+    public static function getOneById(int $productId): self|null
     {
-        $stmt = $this->getPdo()->prepare("
-            SELECT * FROM {$this->getTableName()} WHERE id = :product_id"
+        $tableName = self::getTableName();
+        $stmt = static::getPdo()->prepare("
+            SELECT * FROM $tableName WHERE id = :product_id"
         );
         $stmt->execute(['product_id' => $productId]);
         $products = $stmt->fetch();
 
-        return $this->hydrate($products);
+        return static::hydrate($products);
     }
 
-    public function deleteProductByUserId(int $userId): void
+    public static function deleteProductByUserId(int $userId): void
     {
-        $stmt = $this->getPdo()->prepare(
-            "DELETE FROM {$this->getTableName()} WHERE id = :user_id"
+        $tableName = self::getTableName();
+        $stmt = static::getPdo()->prepare(
+            "DELETE FROM $tableName WHERE id = :user_id"
         );
         $stmt->execute(['user_id' => $userId]);
     }
 
-    private function hydrate(array $products): self|null
+    public static function hydrate(array $products): self|null
     {
         if (!$products)
         {

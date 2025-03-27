@@ -43,7 +43,6 @@
                         <button class="product-button">
                             <img
                                     src="<?php echo $product->getImage(); ?>"
-                                    alt="Apple IPhone 14 PRO Max Gold"
                                     class="product-image"
                             />
                         </button>
@@ -76,6 +75,30 @@
 </section>
 
 </body>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        // Обработчик для всех форм с классом add-to-cart-form
+        $('.add-to-cart-form').on('submit', function (event) {
+            // Предотвращаем стандартное поведение формы
+            event.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                url: "/addProduct",
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function (response) {
+                    // Обновляем количество товаров в бейдже корзины
+                    $('.card__bottom').text(response.count);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ошибка при добавлении товара:', error);
+                }
+            });
+        });
+    });
+</script>
 </html>
 
 <style>

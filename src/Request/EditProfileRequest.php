@@ -27,7 +27,7 @@ class EditProfileRequest extends Request
         //валидация имени
         if (isset($this->body['name'])) {
             $name = $this->body['name'];
-            if (strlen($name) < 2 || strlen($name) > 50) {
+            if (strlen($name) < 2 || strlen($name) > 200) {
                 $errors['name'] = "Недопустимое количество букв в поле Name";
             }
         } else {

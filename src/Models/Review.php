@@ -12,16 +12,17 @@ class Review extends Model
     private $reviewText;
     private $date;
 
-    protected function getTableName(): string
+    protected static function getTableName(): string
     {
         return 'reviews';
     }
 
-    public function add(int $userId, int $productId, int $rating, string $author, string $reviewText): void
+    public static function add(int $userId, int $productId, int $rating, string $author, string $reviewText): void
     {
+        $tableName = static::getTableName();
         $currentDate = date("Y-m-d H:i:s");
-        $statement = $this->getPdo()->prepare(
-            "INSERT INTO {$this->getTableName()} (user_id, product_id, rating, author, review_text, date) 
+        $statement = static::getPdo()->prepare(
+            "INSERT INTO $tableName (user_id, product_id, rating, author, review_text, date) 
                     VALUES (:user_id, :product_id, :rating, :author, :reviewText, :date)"
         );
         $statement->execute([
@@ -34,20 +35,21 @@ class Review extends Model
         ]);
     }
 
-    public function getById(int $productId): array
+    public static function getById(int $productId): array
     {
-        $statement = $this->getPdo()->prepare("SELECT * FROM {$this->getTableName()} WHERE product_id = :product_id");
+        $tableName = static::getTableName();
+        $statement = static::getPdo()->prepare("SELECT * FROM $tableName WHERE product_id = :product_id");
         $statement->execute(['product_id' => $productId]);
         $reviews = $statement->fetchAll();
 
         $newReview = [];
         foreach ($reviews as $review) {
-            $newReview[] = $this->hydrate($review);
+            $newReview[] = static::hydrate($review);
         }
         return $newReview;
     }
 
-    private function hydrate(array $reviews): self|null
+    private static function hydrate(array $reviews): self|null
     {
         if (!$reviews) {
             return null;

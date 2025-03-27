@@ -1,8 +1,6 @@
 <?php
 namespace Core;
 
-use Request\Request;
-
 class App
 {
     private array $routes = [];
@@ -22,12 +20,25 @@ class App
                 $controller = new $class();
 
                 $requestClass = $handler['request'];
+                try {
+                    if ($requestClass !== null) {
+                        $request = new $requestClass($_POST);
+                        $controller->$method($request);
+                    } else {
+                        $controller->$method();
+                    }
+                } catch (\Throwable $exception) {
+                    $errorMessage = sprintf(
+                        "[%s] Ошибка: %s в %s на строке %d. Код: %d\n",
+                        date('Y-m-d H:i:s'), // Дата и время
+                        $exception->getMessage(), // Сообщение об ошибке
+                        $exception->getFile(), // Файл, где произошла ошибка
+                        $exception->getLine(), // Строка, где произошла ошибка
+                        $exception->getCode() // Код ошибки
+                    );
 
-                if ($requestClass !== null) {
-                    $request = new $requestClass($_POST);
-                    $controller->$method($request);
-                } else {
-                    $controller->$method();
+                    file_put_contents('./../Storage/Log/errors.txt', $errorMessage, FILE_APPEND);
+                    require_once './../Views/505.php';
                 }
             } else {
                 echo "$requestMethod не поддерживается адресом $requestUri";
